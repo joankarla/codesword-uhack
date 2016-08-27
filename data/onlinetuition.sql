@@ -16,6 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `accounts`
+--
+
+DROP TABLE IF EXISTS `accounts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `accounts` (
+  `aid` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11) NOT NULL,
+  `accountnum` varchar(45) NOT NULL,
+  PRIMARY KEY (`aid`),
+  KEY `uid_idx` (`uid`),
+  CONSTRAINT `accounts_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `users` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `accounts`
+--
+
+LOCK TABLES `accounts` WRITE;
+/*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
+INSERT INTO `accounts` VALUES (1,3,'000000012751'),(2,1,'000000012756'),(3,2,'000000012757');
+/*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `curriculums`
 --
 
@@ -104,7 +131,7 @@ CREATE TABLE `schools` (
 
 LOCK TABLES `schools` WRITE;
 /*!40000 ALTER TABLE `schools` DISABLE KEYS */;
-INSERT INTO `schools` VALUES (1,'University of the Philippines - Diliman',1500,'1562485620'),(2,'University of the Philippines - Los Banos',1500,'1562485621'),(3,'Ateneo de Manila University',3276.55,'5462054862'),(4,'De La Salle University',2363,'8462156972');
+INSERT INTO `schools` VALUES (1,'University of the Philippines - Diliman',1500,'000000012752'),(2,'University of the Philippines - Los Banos',1500,'000000012753'),(3,'Ateneo de Manila University',3276.55,'000000012754'),(4,'De La Salle University',2363,'000000012755');
 /*!40000 ALTER TABLE `schools` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -210,4 +237,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-27 22:34:19
+-- Dump completed on 2016-08-28  1:48:04
