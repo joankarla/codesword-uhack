@@ -78,6 +78,23 @@
 			addPayment($data);
 		}
 	}
+	elseif ($action == "update") {
+		if ($dataType == "users") {
+			updateUser($data);
+		}
+		elseif ($dataType == "schools") {
+			updateSchool($data);
+		}
+		elseif ($dataType == "students") {
+			updateStudent($data);
+		}
+		elseif ($dataType == "subjects") {
+			updateSubject($data);
+		}
+		elseif ($dataType == "payments") {
+			updatePayment($data);
+		}
+	}
 	else {
 		//Default - read action
 		if ($userType == null) {
