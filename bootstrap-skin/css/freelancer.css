@@ -348,9 +348,9 @@ footer .footer-below {
 .btn-outline:focus,
 .btn-outline:active,
 .btn-outline.active {
-  color: white;
-  background: #233140;
-  border: solid 2px #233140;
+  color: #233140;
+  background: #FFFFFF;
+  border: solid 2px #FFFFFF;
   /*border: solid 2px white;*/
 }
 .btn-primary {
@@ -451,7 +451,8 @@ fieldset[disabled] .btn-success.active {
 .btn:focus,
 .btn:active,
 .btn.active {
-  outline: none;
+  color: #18BC9C;
+  background-color: white;
 }
 .scroll-top {
   position: fixed;
@@ -533,4 +534,8 @@ fieldset[disabled] .btn-success.active {
 
 .darktext {
   color: #585858;
+}
+
+.input-group {
+  margin: 30px;
 }
