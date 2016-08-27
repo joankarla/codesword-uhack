@@ -179,10 +179,6 @@
 			echo "Error: No accountnum Input! <Br/>";
 			return http_response_code(400);
 		}
-		if ($defaultpriceperunit == null) {
-			echo "Error: No defaultpriceperunit Input! <Br/>";
-			return http_response_code(400);
-		}
 
 		//Optional Inputs
 		if ($defaultpriceperunit) {
