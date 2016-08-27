@@ -2,6 +2,7 @@
 	require_once('readData.php');
 	require_once('addData.php');
 	require_once('updateData.php');
+	require_once('deleteData.php');
 
 	//Provide Data for the following:
 	// Administrators 	-	(admin)
@@ -94,6 +95,23 @@
 		}
 		elseif ($dataType == "payments") {
 			updatePayment($data);
+		}
+	}
+	elseif ($action == "delete") {
+		if ($dataType == "users") {
+			deleteUser($data);
+		}
+		elseif ($dataType == "schools") {
+			deleteSchool($data);
+		}
+		elseif ($dataType == "students") {
+			deleteStudent($data);
+		}
+		elseif ($dataType == "subjects") {
+			deleteSubject($data);
+		}
+		elseif ($dataType == "payments") {
+			deletePayment($data);
 		}
 	}
 	else {
