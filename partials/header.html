@@ -3,8 +3,11 @@
     <ul class="nav nav-pills pull-right">
       <li role="presentation" ng-hide="currentUser"><a href="#" ng-click="header.openLogin()">Login</a></li>
       <li role="presentation" ng-hide="currentUser"><a href="#" ng-click="header.openSignUp()">Sign Up</a></li>
-      <li role="presentation" ng-show="currentUser && currentProfile.userType == 'school'"><a href="/dashboard">Dashboard</a></li>
-      <li role="presentation" ng-show="currentUser && currentProfile.userType == 'payor'"><a href="/payment">Payment</a></li>
+      <li role="presentation" ng-show="currentUser && currentUser.isTypeSchool()"><a href="/report">Payments</a></li>
+      <li role="presentation" ng-show="currentUser && currentUser.isTypeSchool()"><a href="/subjects">Subjects</a></li>
+      <li role="presentation" ng-show="currentUser && currentUser.isTypeUser()"><a href="/payment">Payment</a></li>
+      <li role="presentation" ng-show="currentUser && currentUser.isTypeUser()"><a href="/payments">History</a></li>
+      <li role="presentation" ng-show="currentUser && currentUser.isTypeUser()"><a href="/dependents">Dependents</a></li>
       <li role="presentation" ng-show="currentUser"><a href="/profile">Profile</a></li>
       <li role="presentation" ng-show="currentUser"><a href="#" ng-click="header.signOut()">Logout</a></li>
 
@@ -45,7 +48,7 @@
   <div class="modal-header">
     <h3 class="modal-title" id="modal-title">Sign Up</h3>
   </div>
-  <form ng-submit="createUser()" name="userForm">
+  <form ng-submit="createUser(userForm)" name="userForm">
     <div class="modal-body" id="modal-body">
       <div class="alert alert-danger" role="alert" ng-show="error.message">
         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -90,10 +93,20 @@
                placeholder="Landline" aria-label="Landline">
       </div>
       <div class="btn-group">
-        <label class="btn btn-primary" ng-model="userType" uib-btn-radio="'payor'">Sign up to Pay</label>
+        <label class="btn btn-primary" ng-model="userType" uib-btn-radio="'user'">Sign up to Pay</label>
         <label class="btn btn-primary" ng-model="userType" uib-btn-radio="'school'">Sign up as School</label>
       </div>
 
+      <div class="input-group" ng-class="{ 'has-error': userForm.schoolName.$invalid && userForm.$dirty }"
+           ng-show="userType=='school'">
+        <input type="text" class="form-control" name="schoolName" ng-model="schoolName"
+               placeholder="School Name" aria-label="School Name" ng-required="userType=='school'">
+      </div>
+      <div class="input-group" ng-class="{ 'has-error': userForm.schoolAccount.$invalid && userForm.$dirty }"
+           ng-show="userType=='school'">
+        <input type="text" class="form-control" name="schoolAccount" ng-model="schoolAccount"
+               placeholder="School Account Number" aria-label="School Account Number" ng-required="userType=='school'">
+      </div>
 
     </div>
     <div class="modal-footer">
