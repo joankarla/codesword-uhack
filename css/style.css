@@ -76,12 +76,12 @@ hr.star-primary:after {
 
 th {
   font-family: "Lato";
-  font-size: 20px;
+  font-size: 16px;
 }
 
 td {
   font-family: "Lato";
-  font-size: 20px;
+  font-size: 16px;
 }
 
 header {
@@ -666,4 +666,7 @@ fieldset[disabled] .btn-success.active {
 
 }
 
+table {
+  margin-top: 10px;
+}
 
