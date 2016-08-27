@@ -1,6 +1,11 @@
 <h3>Payment page</h3>
 <div>
-  <form name="paymentForm" ng-submit="addPayment(paymentForm)">
+  <form name="paymentForm" ng-submit="submitPayment(paymentForm)">
+    <div class="alert alert-danger" role="alert" ng-show="error.message">
+      <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+      <span class="sr-only">Error:</span>
+      <span ng-bind="error.message"></span>
+    </div>
     <div class="btn-group">
       <label class="btn btn-primary" ng-model="dependentMode" uib-btn-radio="'select'">Select Dependent</label>
       <label class="btn btn-primary" ng-model="dependentMode" uib-btn-radio="'add'">Add Dependent</label>
@@ -72,7 +77,6 @@
       </select>
     </div>
 
-    <!-- TODO: select subjects, display total units computed, total fee computed -->
     <div class="form-group">
       <label for="subjectsSelect">Select Subjects</label>
       <ui-select multiple ng-model="params.subjects" theme="select2" class="form-control" title="Choose a subject">
@@ -84,5 +88,45 @@
       </ui-select>
     </div>
 
+    <div class="cart">
+      <div>
+        <h4>Current Fees:</h4>
+          <div class="table-responsive">
+            <table class="table">
+              <tr>
+                <th>Subject Name</th>
+                <th>Description</th>
+                <th>Units</th>
+                <th>Fee</th>
+              </tr>
+              <tr ng-repeat="sub in params.subjects">
+                <td ng-bind="sub.subname"></td>
+                <td ng-bind="sub.subdesc"></td>
+                <td ng-bind="sub.units"></td>
+                <td>₱{{(sub.units * sub.priceperunit)|number:2}}</td>
+              </tr>
+              <tr>
+                <td></td>
+                <td class="totalgit ">Total</td>
+                <td>{{params.totalunits}}</td>
+                <td>₱{{params.fee|number:2}}</td>
+              </tr>
+            </table>
+          </div>
+      </div>
+    </div>
+
+    <div class="unionbank info">
+      <!-- TODO: unionbank/visa details go here -->
+    </div>
+
+    <div>
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </div>
+    <div class="alert alert-danger" role="alert" ng-show="error.message">
+      <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+      <span class="sr-only">Error:</span>
+      <span ng-bind="error.message"></span>
+    </div>
   </form>
 </div>

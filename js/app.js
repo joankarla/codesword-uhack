@@ -1,4 +1,5 @@
 angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie', 'ui.select', 'ngSanitize'])
+.constant('moment', moment)
 .config(function($stateProvider, $urlRouterProvider, $locationProvider) {
   $locationProvider.html5Mode(true);
   $stateProvider.state("index", {
@@ -313,25 +314,25 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         console.log("!!! userPromise reject");
         return $q.reject('unauthorized');
       }
-    }
+    };
 
     Auth.$requireSignIn = function() {
       console.log("!!! requireSignIn", ipCookie('USER'));
       return Auth.userPromise();
-    }
+    };
 
     Auth.$onAuthStateChanged = function(successCallback) {
       console.log("!!! onAuthStateChanged", ipCookie('USER'));
       if (ipCookie('USER')) {
         successCallback({'email': ipCookie('USER')});
       }
-    }
+    };
 
     Auth.$signOut = function() {
       console.log("!!! signOut", ipCookie('USER'));
       ipCookie.remove('USER');
       return $q.when(true);
-    }
+    };
 
     Auth.$signInWithEmailAndPassword = function(email, password) {
       console.log("!!! signInWithEmailAndPassword", ipCookie('USER'));
@@ -341,18 +342,18 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
       } else {
         return $q.reject('Wrong email/password. Please try again.');
       }
-    }
+    };
 
     Auth.$createUserWithEmailAndPassword = function(email, password) {
       console.log("!!! createUserWithEmailAndPassword", ipCookie('USER'));
       ipCookie('USER', email);
       return Auth.userPromise();
-    }
+    };
 
     Auth.$waitForSignIn = function() {
       console.log("!!! waitForSignIn", ipCookie('USER'));
       return $q.when(true);
-    }
+    };
 
     return Auth;
   }
@@ -366,13 +367,13 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
 
     User.prototype.isTypeSchool = function() {
       return this.usertype == 'school';
-    }
+    };
     User.prototype.isTypeUser = function() {
       return this.usertype == 'user';
-    }
+    };
     User.prototype.isTypeAdmin = function() {
       return this.usertype == 'admin';
-    }
+    };
 
     User.prototype.getInfo = function() {
       var infoUrl = "http://localhost/data/handleData.php?utype=user&dtype=info";
@@ -388,8 +389,48 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     };
 
     User.prototype.saveInfo = function() {
-      //TODO: save user + school params in php server
-      return $q.when(this);
+      var self = this;
+      function createUserPromise() {
+        return $http.get('http://localhost/data/handleData.php', {
+          'params':{
+            'dtype': 'users',
+            'action': 'add',
+            'data': {
+              'password': self.password,
+              'firstname': self.firstname,
+              'middlename': self.middlename ? self.middlename : null,
+              'lastname': self.lastname,
+              'address': self.address,
+              'mobile': self.mobile ? self.mobile : null,
+              'landline': self.landline ? self.landline : null,
+              'email': self.email,
+              'usertype': self.usertype,
+              'sid': self.sid ? self.sid : null
+            }
+          }
+        }).then(function(user) {
+          $log.info("successfully added user", user);
+          return $q.when(new User(user));
+        }, function(error){
+          $log.error("can't create user", error);
+          return $q.reject(error);
+        });
+      }
+
+      if (this.isTypeSchool()) {
+        return School.saveInfo({
+          'name': self.schoolName,
+          'accountnum': self.schoolAccount
+        }).then(function(school) {
+          self.sid = school.sid;
+          return createUserPromise();
+        }, function(error) {
+          $log.error("can't create user becuase can't create school", error);
+          return $q.reject(error);
+        });
+      } else {
+        return createUserPromise();
+      }
     };
 
     User.prototype.getSchoolInfo = function() {
@@ -407,7 +448,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         $log.warn("Cannot get school info " + response);
         return $q.reject(response);
       });
-    }
+    };
 
     User.prototype.getPaymentsMade = function() {
       var paymentsUrl = "http://localhost/data/handleData.php?utype=user&dtype=payments";
@@ -419,12 +460,12 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         }
 
         $log.info("successfully fetched user payments", payments);
-        return payments
+        return payments;
       }, function(response) {
         $log.warn("Cannot get payments " + response);
         return $q.reject(response);
       });
-    }
+    };
 
     User.prototype.getStudents = function() {
       var studentsUrl = "http://localhost/data/handleData.php?utype=user&dtype=dependents";
@@ -441,7 +482,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         $log.warn("Cannot get school subjects " + response);
         return $q.reject(response);
       });
-    }
+    };
 
     User.getAllUsers = function() {
       if (!$rootScope.currentUser.isTypeAdmin()) {
@@ -460,7 +501,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         $log.warn("Cannot get all users " + response);
         return $q.reject(response);
       });
-    }
+    };
 
     return User;
   }
@@ -491,7 +532,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         $log.warn("Cannot get school payments " + response);
         return $q.reject(response);
       });
-    }
+    };
 
     School.prototype.getSubjects = function() {
       if ($rootScope.currentUser.isTypeUser()){
@@ -512,7 +553,27 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         $log.warn("Cannot get school subjects " + response);
         return $q.reject(response);
       });
-    }
+    };
+
+    School.saveInfo = function(params) {
+      return $http.get("http://localhost/data/handleData.php", {
+        'params': {
+          'data': {
+            'name': params.name,
+            'accountnum': params.accountnum,
+            'defaultpriceperunit': null
+          },
+          'dtype': 'schools',
+          'action': 'add'
+        }
+      }).then(function(response) {
+        $log.info("successfully created school", response.data[0]);
+        return new School(response.data[0]);
+      }, function(error){
+        $log.error("can't create school", error);
+        return $q.reject(error);
+      });
+    };
 
     School.getAllSchools = function() {
       var schoolsUrl = "http://localhost/data/handleData.php?utype=admin&dtype=schools";
@@ -528,7 +589,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         $log.warn("Cannot get all schools " + response);
         return $q.reject(response);
       });
-    }
+    };
 
     return School;
   }
@@ -560,7 +621,29 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         $log.warn("Cannot get all students " + response);
         return $q.reject(response);
       });
-    }
+    };
+
+    Student.addStudent = function(params) {
+      return $http.get("http://localhost/data/handleData.php", {
+        'params': {
+          'dtype': 'students',
+          'action': 'add',
+          'data': {
+            "uid":params.uid,
+            "firstname":params.firstname,
+            "middlename":params.middlename,
+            "lastname":params.lastname,
+            "birthdate":moment(params.birthdate).format("YYYY-MM-DD")
+          }
+        }
+      }).then(function(response) {
+        $log.info("successfully added student", response.data[0]);
+        return new Student(response.data[0]);
+      }, function(error){
+        $log.error("cannot add student", error);
+        return $q.reject(error);
+      });
+    };
     return Student;
   }
 ]).factory("Subject", ["$http", "$q", "$log", "$rootScope",
@@ -584,7 +667,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         $log.warn("Cannot get all subjects " + response);
         return $q.reject(response);
       });
-    }
+    };
     return Subject;
   }
 ])
@@ -615,7 +698,33 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         $log.warn("Cannot get all subjects " + response);
         return $q.reject(response);
       });
-    }
+    };
+
+    Payment.addPayment = function(params) {
+      return $http.get("http://localhost/data/handleData.php", {
+        'params': {
+          'dtype':'payments',
+          'action':'add',
+          'data':{
+            'studid':params.studid,
+            "sid":params.sid,
+            "timestamp":moment().format("YYYY MM DD hh:mm:ss"),
+            "schoolperiod":params.schoolperiod,
+            "educlevel":params.educlevel,
+            "subids":params.subids,
+            "totalunits":params.totalunits,
+            "fee":params.fee,
+            "pstatus":"pending"
+          }
+        }
+      }).then(function(response){
+        $log.info("successfully added payment", response.data[0]);
+        return new Payment(response.data[0]);
+      }, function(error) {
+        $log.error("can't create payment", error);
+        return $q.reject(error);
+      });
+    };
     return Payment;
   }
 ])
@@ -714,7 +823,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         $uibModalInstance.close();
       });
     }).catch(function(error) {
-      $scope.error = error;
+      $scope.error = { 'code': 'login.error', 'message': error.data };
     });
   };
 
@@ -734,10 +843,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     }
 
     if ($scope.password != $scope.passwordConfirm) {
-      $scope.error = {
-        'code': 'password.mismatch',
-        'message': "Passwords Don't Match"
-      }
+      $scope.error = { 'code': 'password.mismatch', 'message': "Passwords Don't Match" };
       return;
     }
 
@@ -752,6 +858,8 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         profile.mobile = $scope.mobileNumber ? $scope.mobileNumber : null;
         profile.landline = $scope.landline ? $scope.landline : null;
         profile.usertype = $scope.userType;
+        profile.password = $scope.password;
+        profile.email = $scope.email;
 
         if(profile.isTypeSchool) {
           profile.schoolName = $scope.schoolName;
@@ -765,11 +873,13 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
             $window.location.replace("/report");
           }
           $uibModalInstance.close();
-        }).catch(function(error) {
+        }, function(error) {
           $log.error("error saving profile: ", error);
+          $scope.error = {'code': 'user.save.error', 'message': error.data};
+          Auth.$signOut();
         });
       }, function(error) {
-        $scope.error = error;
+        $scope.error = { 'code': 'auth.createUserWithEmailAndPassword.error', 'message': error.data };
       });
   };
 
@@ -777,23 +887,36 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     $uibModalInstance.dismiss('cancel');
   };
 })
-.controller('PaymentPageCtrl', function ($scope, $rootScope, $log, School, Subject) {
+.controller('PaymentPageCtrl', function ($scope, $rootScope, $log, School, Subject, Student, Payment, moment) {
   $scope.datepickerOptions = {
     'datepickerMode': 'year',
     'maxDate': new Date()
-  }
+  };
   $scope.datepickerFormat = 'yyyy-MM-dd';
   $scope.datepickerOpen = true;
   $scope.params = {
-    'sid': null
-  }
+    'sid': null,
+    'fee': 0,
+    'totalunits': 0,
+    'pstatus': 'pending'
+  };
   $scope.currentSubjectList = [];
 
   $scope.$watch(function() {
-    return $scope.params.sid
+    return $scope.params.sid;
   }, function(sid){
     $scope.currentSubjectList = ($scope.params.sid && $scope.subjectsBySid[sid]) ? $scope.subjectsBySid[sid] : [];
     $scope.params.subjects = [];
+  }, true);
+
+  $scope.$watch(function() {
+    return $scope.params.subjects;
+  }, function(subjects){
+    $scope.params.subids = $scope.params.subjects.map(function(a) {return a.subid;}).join();
+    if ($scope.params.subjects.length > 0) {
+      var feeList = $scope.params.subjects.map(function(a) { return a.priceperunit * a.units; });
+      $scope.params.fee = feeList.reduce(function(a,b) { return a + b; });
+    }
   }, true);
 
   School.getAllSchools().then(function(schools) {
@@ -806,16 +929,16 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         if (!(subjects[i].sid in $scope.subjectsBySid)) {
           $scope.subjectsBySid[subjects[i].sid] = [];
         }
-        $scope.subjectsBySid[subjects[i].sid].push(subjects[i])
+        $scope.subjectsBySid[subjects[i].sid].push(subjects[i]);
       }
 
     }, function(error) {
-      $scope.error = error;
+      $scope.error = { 'code': 'subject.allSubjects.error', 'message': error.data };
       $log.error(error);
     });
   }, function(error){
     $log.error = error;
-  })
+  });
 
   $rootScope.profilePromise.then(function(user) {
     if (!user)
@@ -829,21 +952,49 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         $scope.dependentMode = 'add';
       }
     }, function(error) {
-      $scope.error = error;
+      $scope.error = {'code': 'user.getStudents.error','message': error.data};
       $log.error(error);
     });
   }, function(error) {
     $log.error(error);
   });
 
-  $scope.addPayment = function(form) {
-    if (dependentMode=='add') {
-      //add dependent
-      //set $scope.params.studid = resulting studid
-    }
+  function createPaymentPromise() {
+    return Payment.addPayment($scope.params).then(function(payment){
+      //compute percentage to school, percentage commission
+      //TODO: use Unionbank API to transfer 2 transactions
+      
+      //TODO: after Unionbank API, updatePaymentPromise()
 
-    //var result = objArray.map(function(a) {return a.foo;});
-    //calculate fees
+
+    }, function(error) {
+      $scope.error = {'code': 'payment.addPayment.error','message': error.data};
+      $log.error(error);
+    });
+  }
+
+  $scope.submitPayment = function(form) {
+    if (!$scope.params.subjects.length) {
+      $scope.error = {'code': 'submitPayment.error','message': 'No Subjects Selected'};
+      return;
+    }
+    if ($scope.dependentMode=='add') {
+      Student.addStudent({
+        'uid': $rootScope.currentUser.uid,
+        'firstname': $scope.params.firstname,
+        'middlename': $scope.params.middlename,
+        'lastname': $scope.params.lastname,
+        'birthdate': $scope.params.birthdate
+      }).then(function(student) {
+        $scope.params.studid = student.studid;
+        createPaymentPromise();
+      }, function(error){
+        $log.error("can't create student", error);
+        $scope.error = {'code': 'student.addStudent.error','message': error.data};
+      });
+    } else {
+      createPaymentPromise();
+    }
 
     //redirect to payment history for sucessful payment
   };
@@ -862,7 +1013,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         $scope.payments = payments;
       }, function(error) {
         $scope.error = error;
-        $log.error(error)
+        $log.error(error);
       });
     }, function(error){
       $log.error(error);
@@ -883,7 +1034,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
       }, function(error) {
         $scope.error = error;
         $log.error = error;
-      })
+      });
     }, function(error){
       $log.error(error);
     });
@@ -1017,7 +1168,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         $rootScope.currentUser.school = school;
       }, function(error) {
         $scope.error = error;
-        $log.error(error)
+        $log.error(error);
       });
     }
 
