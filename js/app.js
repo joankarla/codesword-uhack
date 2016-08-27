@@ -1,9 +1,66 @@
-angular.module('sampleApp', ['ui.bootstrap'])
-.controller('sampleAppController', [
+angular.module('sampleApp', ['ui.bootstrap', 'ui.router'])
+
+.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
+
+  $locationProvider.html5Mode({
+    enabled: true//,
+    // requireBase: false
+  });
+
+  // $urlRouterProvider.otherwise("/");
+
+  $stateProvider.state("index", {
+    url: "/",
+    views: {
+      "header": {
+        templateUrl: "partials/header.html",
+        controller: "HeaderController",
+        controllerAs: "header"
+      },
+      "content": {
+        templateUrl: "partials/landing.html",
+        controller: "LandingPageCtrl",
+        controllerAs: "landing"
+      }
+    },
+    data: {
+      pageId: "home-page",
+      pageTitle: "Home Page"
+    }
+  });
+
+  $stateProvider.state('paymentPage', {
+    url: "/payment",
+    views: {
+      "header": {
+        templateUrl: "partials/header.html",
+        controller: "HeaderController",
+        controllerAs: "header"
+      },
+      "content": {
+        templateUrl: "partials/payment.html",
+        controller: "PaymentPageCtrl",
+        controllerAs: "payment"
+      }
+    },
+    data: {
+      pageId: "payment-page",
+      pageTitle: "Payment"
+    }
+  })
+})
+.run(function($rootScope) {
+  $rootScope.$on("$stateChangeError", console.log.bind(console));
+  $rootScope.$on("$stateChangeSuccess", function (event, toState, toParams, fromState, fromParams) {
+    $rootScope.stateData = angular.copy(toState.data);
+  });
+})
+
+.controller('HeaderController', [
   '$q', '$scope', '$http', '$window', '$log', '$uibModal',
   function($q, $scope, $http, $window, $log, $uibModal) {
     var self = this;
-    $log.info("app loaded");
+    $log.info("header loaded");
 
     this.openLogin = function() {
       $log.info("open login modal");
@@ -13,7 +70,8 @@ angular.module('sampleApp', ['ui.bootstrap'])
         ariaLabelledBy: 'login',
         ariaDescribedBy: 'login-body',
         templateUrl: 'loginModal.html',
-        controller: 'LoginModalCtrl'
+        controller: 'LoginModalCtrl',
+        windowClass: 'login-modal'
       });
 
       modalInstance.result.then(function (params) {
@@ -31,7 +89,8 @@ angular.module('sampleApp', ['ui.bootstrap'])
         ariaLabelledBy: 'signup',
         ariaDescribedBy: 'signup-body',
         templateUrl: 'signUpModal.html',
-        controller: 'SignUpModalCtrl'
+        controller: 'SignUpModalCtrl',
+        windowClass: 'signup-modal'
       });
 
       modalInstance.result.then(function (params) {
@@ -65,5 +124,12 @@ angular.module('sampleApp', ['ui.bootstrap'])
     $uibModalInstance.dismiss('cancel');
   };
 })
+.controller('PaymentPageCtrl', function ($scope) {
+  $scope.test = {};
+})
+.controller('LandingPageCtrl', function ($scope) {
+  $scope.test = {};
+})
+
 ;
 
