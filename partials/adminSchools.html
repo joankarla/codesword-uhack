@@ -1,18 +1,20 @@
-<h3>Admin</h3>
-<div ng-cloak="profilePromise">
-  <h4>All Schools:</h4>
-  <div class="table-responsive">
-    <table class="table" ng-show="schools">
-      <tr>
-        <th>Name</th>
-        <th>Account Number</th>
-        <th>Default Price Per Unit</th>
-      </tr>
-      <tr ng-repeat="school in schools">
-        <td ng-bind="school.name"></td>
-        <td ng-bind="school.accountnum"></td>
-        <td>₱{{school.defaultpriceperunit|number:2}}</td>
-      </tr>
-    </table>
+<div class="scaler">
+  <h3>Admin</h3>
+  <div ng-cloak="profilePromise">
+    <h4>All Schools:</h4>
+    <div class="table-responsive">
+      <table class="table" ng-show="schools">
+        <tr>
+          <th>Name</th>
+          <th>Account Number</th>
+          <th>Default Price Per Unit</th>
+        </tr>
+        <tr ng-repeat="school in schools">
+          <td ng-bind="school.name"></td>
+          <td ng-bind="school.accountnum"></td>
+          <td>₱{{school.defaultpriceperunit|number:2}}</td>
+        </tr>
+      </table>
+    </div>
   </div>
-</div>
+</div

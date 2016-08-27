@@ -1,21 +1,23 @@
-<div ng-cloak='profilePromise'>
-  <h4>Profile Info:</h4>
-  <p>
-    Email: {{currentUser.email}}<br/>
-    First Name: {{currentUser.firstname}}<br/>
-    Middle Name: {{currentUser.middlename}}<br/>
-    Last Name: {{currentUser.lastname}}<br/>
-    Address: {{currentUser.address}}<br/>
-    Mobile Number: {{currentUser.mobile}}<br/>
-    Landline: {{currentUser.landline}}<br/>
-    User Type: {{currentUser.usertype}}
-  </p>
-
-  <div ng-show="currentUser.isTypeSchool() && currentUser.school">
-    <h4>School Info:</h4>
+<div class="scaler">
+  <div ng-cloak='profilePromise'>
+    <h4>Profile Info:</h4>
     <p>
-      School Name: {{currentUser.school.name}}<br/>
-      School Account Number: {{currentUser.school.accountnum}}<br/>
+      Email: {{currentUser.email}}<br/>
+      First Name: {{currentUser.firstname}}<br/>
+      Middle Name: {{currentUser.middlename}}<br/>
+      Last Name: {{currentUser.lastname}}<br/>
+      Address: {{currentUser.address}}<br/>
+      Mobile Number: {{currentUser.mobile}}<br/>
+      Landline: {{currentUser.landline}}<br/>
+      User Type: {{currentUser.usertype}}
     </p>
+
+    <div ng-show="currentUser.isTypeSchool() && currentUser.school">
+      <h4>School Info:</h4>
+      <p>
+        School Name: {{currentUser.school.name}}<br/>
+        School Account Number: {{currentUser.school.accountnum}}<br/>
+      </p>
+    </div>
   </div>
 </div>

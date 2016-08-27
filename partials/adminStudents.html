@@ -1,18 +1,20 @@
-<h3>Admin</h3>
-<div ng-cloak="profilePromise">
-  <h4>All Students:</h4>
-  <div class="table-responsive">
-    <table class="table" ng-show="students">
-      <tr>
-        <th>User Email</th>
-        <th>Name</th>
-        <th>Birthday</th>
-      </tr>
-      <tr ng-repeat="student in students">
-        <td ng-bind="student.userEmail"></td>
-        <td>{{student.firstname}} {{student.middlename ? student.middlename + ' ' : ''}}{{student.lastname}}</td>
-        <td>{{student.birthdate|date:"mediumDate"}}</td>
-      </tr>
-    </table>
+<div class="scaler">
+  <h3>Admin</h3>
+  <div ng-cloak="profilePromise">
+    <h4>All Students:</h4>
+    <div class="table-responsive">
+      <table class="table" ng-show="students">
+        <tr>
+          <th>User Email</th>
+          <th>Name</th>
+          <th>Birthday</th>
+        </tr>
+        <tr ng-repeat="student in students">
+          <td ng-bind="student.userEmail"></td>
+          <td>{{student.firstname}} {{student.middlename ? student.middlename + ' ' : ''}}{{student.lastname}}</td>
+          <td>{{student.birthdate|date:"mediumDate"}}</td>
+        </tr>
+      </table>
+    </div>
   </div>
 </div>

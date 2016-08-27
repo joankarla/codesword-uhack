@@ -1,43 +1,44 @@
-<h3>Payments Made</h3>
-
-<div ng-cloak="profilePromise">
-  <div class="table-responsive">
-    <table class="table" ng-show="payments">
-      <tr>
-        <th>Student</th>
-        <th>School</th>
-        <th>Date</th>
-        <th>School Period</th>
-        <th>Educ Level</th>
-        <th></th>
-        <th>Total Units</th>
-        <th>Total Fee</th>
-      </tr>
-      <tr ng-repeat="payment in payments">
-        <td ng-bind="payment.studentEnrolled"></td>
-        <td ng-bind="payment.school"></td>
-        <td ng-bind="payment.timestamp|date:'short'"></td>
-        <td ng-bind="payment.schoolperiod"></td>
-        <td ng-bind="payment.educlevel"></td>
-        <td>
-          <table class="table" ng-show="payment.subids.length">
-            <tr>
-              <th>Subject Name</th>
-              <th>Description</th>
-              <th>Units</th>
-              <th>Fee</th>
-            </tr>
-            <tr ng-repeat="sub in payment.subids">
-              <td ng-bind="sub.subname"></td>
-              <td ng-bind="sub.subdesc"></td>
-              <td ng-bind="sub.units"></td>
-              <td>₱{{(sub.units * sub.priceperunit)|number:2}}</td>
-            </tr>
-          </table>
-        </td>
-        <td ng-bind="payment.totalunits"></td>
-        <td>₱{{payment.fee|number:2}}</td>
-      </tr>
-    </table>
+<div class="scaler">
+  <h3>Payments Made</h3>
+  <div ng-cloak="profilePromise">
+    <div class="table-responsive">
+      <table class="table" ng-show="payments">
+        <tr>
+          <th>Student</th>
+          <th>School</th>
+          <th>Date</th>
+          <th>School Period</th>
+          <th>Educ Level</th>
+          <th></th>
+          <th>Total Units</th>
+          <th>Total Fee</th>
+        </tr>
+        <tr ng-repeat="payment in payments">
+          <td ng-bind="payment.studentEnrolled"></td>
+          <td ng-bind="payment.school"></td>
+          <td ng-bind="payment.timestamp|date:'short'"></td>
+          <td ng-bind="payment.schoolperiod"></td>
+          <td ng-bind="payment.educlevel"></td>
+          <td>
+            <table class="table" ng-show="payment.subids.length">
+              <tr>
+                <th>Subject Name</th>
+                <th>Description</th>
+                <th>Units</th>
+                <th>Fee</th>
+              </tr>
+              <tr ng-repeat="sub in payment.subids">
+                <td ng-bind="sub.subname"></td>
+                <td ng-bind="sub.subdesc"></td>
+                <td ng-bind="sub.units"></td>
+                <td>₱{{(sub.units * sub.priceperunit)|number:2}}</td>
+              </tr>
+            </table>
+          </td>
+          <td ng-bind="payment.totalunits"></td>
+          <td>₱{{payment.fee|number:2}}</td>
+        </tr>
+      </table>
+    </div>
   </div>
 </div>
