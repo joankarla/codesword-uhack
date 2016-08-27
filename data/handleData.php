@@ -61,97 +61,116 @@
 	debugPrint("Action: $action");
 	debugPrint("Data: $data");
 
-
-	if ($userType == null) {
-		echo "Error: No user type selected <Br/>";
-		return http_response_code(400);
-	}
-	
-	/*****************************************************************************/
-	//Administrator Category
-	/*****************************************************************************/
-	if ($userType == "admin") {
-		// Users
+	if ($action == "add") {
 		if ($dataType == "users") {
-			getAllUsers();
+			addUser($data);
 		}
-		// Students
-		elseif ($dataType == "students") {
-			getAllStudents();
-		}
-		// Payments
-		elseif ($dataType == "payments") {
-			getAllPayments();
-		}
-		// Schools
 		elseif ($dataType == "schools") {
-			getAllSchools();
+			addSchool($data);
 		}
-		// Subjects
+		elseif ($dataType == "students") {
+			addStudent($data);
+		}
 		elseif ($dataType == "subjects") {
-			getAllSubjects();
+			addSubject($data);
 		}
-		else {
-			echo "Error: Unrecognized Data Type <Br/>";
-			return http_response_code(400);
-		}
-	}
-	/*****************************************************************************/
-	//School/University Category
-	/*****************************************************************************/
-	elseif ($userType == "school") {
-		if ($schoolId == null) {
-			echo "Error: No school id input <Br/>";
-			return http_response_code(400);
-		}
-
-		// School Info Details
-		if ($dataType == "info") {
-			getSchoolInfo($schoolId);
-		}
-		// Student Payments
 		elseif ($dataType == "payments") {
-			getSchoolViewStudentPayments($schoolId);
-		}
-		// Subjects
-		elseif ($dataType == "subjects") {
-			getSchoolViewSubjects($schoolId);
-		}
-		else {
-			echo "Error: Unrecognized Data Type <Br/>";
-			return http_response_code(400);
+			addPayment($data);
 		}
 	}
-	/*****************************************************************************/
-	//Users/Payors Category
-	/*****************************************************************************/
-	elseif ($userType == "user") {
-		if ($userId == null) {
-			if ($userEmail == null || $dataType != "info") {
-				echo "Error: No user id or email input <Br/>";
+	else {
+		//Default - read action
+		if ($userType == null) {
+			echo "Error: No user type selected <Br/>";
+			return http_response_code(400);
+		}
+		
+		/*****************************************************************************/
+		//Administrator Category
+		/*****************************************************************************/
+		if ($userType == "admin") {
+			// Users
+			if ($dataType == "users") {
+				getAllUsers();
+			}
+			// Students
+			elseif ($dataType == "students") {
+				getAllStudents();
+			}
+			// Payments
+			elseif ($dataType == "payments") {
+				getAllPayments();
+			}
+			// Schools
+			elseif ($dataType == "schools") {
+				getAllSchools();
+			}
+			// Subjects
+			elseif ($dataType == "subjects") {
+				getAllSubjects();
+			}
+			else {
+				echo "Error: Unrecognized Data Type <Br/>";
 				return http_response_code(400);
-			} else if ($userEmail != null) {
-				//try email if data
-				getUserInfoByEmail($userEmail);
-				return;
 			}
 		}
+		/*****************************************************************************/
+		//School/University Category
+		/*****************************************************************************/
+		elseif ($userType == "school") {
+			if ($schoolId == null) {
+				echo "Error: No school id input <Br/>";
+				return http_response_code(400);
+			}
 
-		// School Info Details
-		if ($dataType == "info") {
-			getUserInfo($userId);
+			// School Info Details
+			if ($dataType == "info") {
+				getSchoolInfo($schoolId);
+			}
+			// Student Payments
+			elseif ($dataType == "payments") {
+				getSchoolViewStudentPayments($schoolId);
+			}
+			// Subjects
+			elseif ($dataType == "subjects") {
+				getSchoolViewSubjects($schoolId);
+			}
+			else {
+				echo "Error: Unrecognized Data Type <Br/>";
+				return http_response_code(400);
+			}
 		}
-		// Student Payments
-		elseif ($dataType == "payments") {
-			getUserViewPayments($userId);
-		}
-		// Dependents
-		elseif ($dataType == "dependents") {
-			getUserStudentDependents($userId);
-		}
-		else {
-			echo "Error: Unrecognized Data Type <Br/>";
-			return http_response_code(400);
+		/*****************************************************************************/
+		//Users/Payors Category
+		/*****************************************************************************/
+		elseif ($userType == "user") {
+			if ($userId == null) {
+				if ($userEmail == null || $dataType != "info") {
+					echo "Error: No user id or email input <Br/>";
+					return http_response_code(400);
+				} else if ($userEmail != null) {
+					//try email if data
+					getUserInfoByEmail($userEmail);
+					return;
+				}
+			}
+
+			// School Info Details
+			if ($dataType == "info") {
+				getUserInfo($userId);
+			}
+			// Student Payments
+			elseif ($dataType == "payments") {
+				getUserViewPayments($userId);
+			}
+			// Dependents
+			elseif ($dataType == "dependents") {
+				getUserStudentDependents($userId);
+			}
+			else {
+				echo "Error: Unrecognized Data Type <Br/>";
+				return http_response_code(400);
+			}
 		}
 	}
 
