@@ -605,7 +605,7 @@
 	// totalunits (pre computed)
 	// fee (pre computed)
 	// pstatus (payment status)
-/*	function updatePayment ($data=null) {
+	function updatePayment ($data=null) {
 		if ($data == null) {
 			echo "Error: NO Data Found <Br/>";
 			return http_response_code(400);
@@ -618,11 +618,17 @@
 
 		//Optional Inputs Bit Mask
 		$opMask = 0b0;
-		$opPid = 0b00001;
-		$opstudid = 0b00010;
-		$opSubdesc = 0b00100;
-		$opUnits = 0b01000;
-		$opPriceperunit = 0b10000;
+		$opStudid = 0b000000001;
+		$opSid = 0b000000010;
+		$opTimestamp = 0b000000100;
+		$opSchoolperiod = 0b000001000;
+		$opEduclevel = 0b000010000;
+		$opSubids = 0b000100000;
+		$opTotalunits = 0b001000000;
+		$opFee = 0b010000000;
+		$opPstatus = 0b100000000;
+		$opTids = 0b1000000000;
+		$opTidff = 0b10000000000;
 
 		$pid = isset($dataDecode->pid) ? $dataDecode->pid : null;
 		$studid = isset($dataDecode->studid) ? $dataDecode->studid : null;
@@ -633,7 +639,9 @@
 		$subids = isset($dataDecode->subids) ? $dataDecode->subids : null;
 		$totalunits = isset($dataDecode->totalunits) ? $dataDecode->totalunits : null;
 		$fee = isset($dataDecode->fee) ? $dataDecode->fee : null;
-		$pstatus = isset($dataDecode->pstatus) ? $dataDecode->pstatus : "pending";
+		$pstatus = isset($dataDecode->pstatus) ? $dataDecode->pstatus : null;
+		$tids = isset($dataDecode->tids) ? $dataDecode->tids : null;
+		$tidff = isset($dataDecode->tidff) ? $dataDecode->tidff : null;
 
 		//Required Inputs: Verify if inputs exist
 		if ($pid == null) {
@@ -646,23 +654,143 @@
 		debugPrint("opMask: $opMask");
 
 		//Optional Inputs
-		if ($name) {
-			debugPrint("name: " . $name);
-			$opMask = $opMask | $opName;
+		if ($studid) {
+			debugPrint("studid: " . $studid);
+			$opMask = $opMask | $opStudid;
+		}
+		if ($sid) {
+			debugPrint("sid: " . $sid);
+			$opMask = $opMask | $opSid;
+		}
+		if ($timestamp) {
+			debugPrint("timestamp: " . $timestamp);
+			$opMask = $opMask | $opTimestamp;
+		}
+		if ($schoolperiod) {
+			debugPrint("schoolperiod: " . $schoolperiod);
+			$opMask = $opMask | $opSchoolperiod;
+		}
+		if ($educlevel) {
+			debugPrint("educlevel: " . $educlevel);
+			$opMask = $opMask | $opEduclevel;
+		}
+		if ($subids) {
+			debugPrint("subids: " . $subids);
+			$opMask = $opMask | $opSubids;
+		}
+		if ($totalunits) {
+			debugPrint("totalunits: " . $totalunits);
+			$opMask = $opMask | $opTotalunits;
+		}
+		if ($fee) {
+			debugPrint("fee: " . $fee);
+			$opMask = $opMask | $opFee;
+		}
+		if ($pstatus) {
+			debugPrint("pstatus: " . $pstatus);
+			$opMask = $opMask | $opPstatus;
+		}
+		if ($tids) {
+			debugPrint("tids: " . $tids);
+			$opMask = $opMask | $opTids;
+		}
+		if ($tidff) {
+			debugPrint("tidff: " . $tidff);
+			$opMask = $opMask | $opTidff;
 		}
 
 		//Compose the required inputs
 		$setClause = "SET ";
-		$whereClause = "WHERE sid=$sid";
+		$whereClause = "WHERE pid=$pid";
 
 		//Compose the optional inputs
 		$isFirst = true;
 		$ctr = 0;
-		if ($opMask & $opName) {
+		if ($opMask & $opStudid) {
 			if (!$isFirst) {
 				$setClause = $setClause . ",";
 			}
-			$setClause = $setClause . "name='$name'";
+			$setClause = $setClause . "studid='$studid'";
+			$isFirst = false;
+			$ctr++;
+		}
+		if ($opMask & $opSid) {
+			if (!$isFirst) {
+				$setClause = $setClause . ",";
+			}
+			$setClause = $setClause . "sid='$sid'";
+			$isFirst = false;
+			$ctr++;
+		}
+		if ($opMask & $opTimestamp) {
+			if (!$isFirst) {
+				$setClause = $setClause . ",";
+			}
+			$setClause = $setClause . "timestamp='$timestamp'";
+			$isFirst = false;
+			$ctr++;
+		}
+		if ($opMask & $opSchoolperiod) {
+			if (!$isFirst) {
+				$setClause = $setClause . ",";
+			}
+			$setClause = $setClause . "schoolperiod='$schoolperiod'";
+			$isFirst = false;
+			$ctr++;
+		}
+		if ($opMask & $opEduclevel) {
+			if (!$isFirst) {
+				$setClause = $setClause . ",";
+			}
+			$setClause = $setClause . "educlevel='$educlevel'";
+			$isFirst = false;
+			$ctr++;
+		}
+		if ($opMask & $opSubids) {
+			if (!$isFirst) {
+				$setClause = $setClause . ",";
+			}
+			$setClause = $setClause . "subids='$subids'";
+			$isFirst = false;
+			$ctr++;
+		}
+		if ($opMask & $opTotalunits) {
+			if (!$isFirst) {
+				$setClause = $setClause . ",";
+			}
+			$setClause = $setClause . "totalunits='$totalunits'";
+			$isFirst = false;
+			$ctr++;
+		}
+		if ($opMask & $opFee) {
+			if (!$isFirst) {
+				$setClause = $setClause . ",";
+			}
+			$setClause = $setClause . "fee='$fee'";
+			$isFirst = false;
+			$ctr++;
+		}
+		if ($opMask & $opPstatus) {
+			if (!$isFirst) {
+				$setClause = $setClause . ",";
+			}
+			$setClause = $setClause . "pstatus='$pstatus'";
+			$isFirst = false;
+			$ctr++;
+		}
+		if ($opMask & $opTids) {
+			if (!$isFirst) {
+				$setClause = $setClause . ",";
+			}
+			$setClause = $setClause . "tids='$tids'";
+			$isFirst = false;
+			$ctr++;
+		}
+		if ($opMask & $opTidff) {
+			if (!$isFirst) {
+				$setClause = $setClause . ",";
+			}
+			$setClause = $setClause . "tidff='$tidff'";
 			$isFirst = false;
 			$ctr++;
 		}
@@ -672,11 +800,14 @@
 			return http_response_code(400);
 		}
 
-		$query = "UPDATE schools $setClause $whereClause";
+		$query = "UPDATE payments $setClause $whereClause";
 
 		executeQuery($query);
-		debugPrint("Updated school: $sid! <Br/>");
-	}*/
+		debugPrint("Updated payment: $pid! <Br/>");
+	}
+
+	// $temp = '{"pid":1,"pstatus":"paid","tids":"45621586","tidff":"9821366"}';
+	// updatePayment($temp);
 
 /*****************************************************************************/
 
