@@ -35,7 +35,9 @@
 
 		$schoolId = isset($_POST["id"]) ? $_POST["id"] : null;
 		$userId = isset($_POST["id"]) ? $_POST["id"] : null;
+
 		$userEmail = isset($_POST["email"]) ? $_POST["email"] : null;
+		$userPwd = isset($_POST["pwd"]) ? $_POST["pwd"] : null;
 	}
 	elseif (isset($_GET) && !empty($_GET)) {
 		debugPrint("GET mode");
@@ -47,13 +49,15 @@
 
 		$schoolId = isset($_GET["id"]) ? $_GET["id"] : null;
 		$userId = isset($_GET["id"]) ? $_GET["id"] : null;
+
 		$userEmail = isset($_GET["email"]) ? $_GET["email"] : null;
+		$userPwd = isset($_GET["pwd"]) ? $_GET["pwd"] : null;
 	}
 	else {
 		echo "Error: No input <Br/>";
 	}
 
-	if ($dataType == null) {
+	if ( ($dataType == null) && ($action != "login") ) {
 		echo "Error: No data type selected <Br/>";
 		return http_response_code(400);
 	}
@@ -63,7 +67,16 @@
 	debugPrint("Action: $action");
 	debugPrint("Data: $data");
 
-	if ($action == "add") {
+	if ($action == "login") {
+		if ( ($userEmail == null) || ($userPwd == null) ) {
+			echo "Error: No Email or Password Input! <Br/>";
+			return http_response_code(400);
+		}
+		else {
+			loginValidation ($userEmail, $userPwd);
+		}
+	}
+	elseif ($action == "add") {
 		if ($dataType == "users") {
 			addUser($data);
 		}
