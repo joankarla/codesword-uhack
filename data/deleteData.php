@@ -80,58 +80,110 @@
 		debugPrint("Deleted school: $sid! <Br/>");
 	}
 
-	$temp = '{"sid":1}';
-	deleteSchool($temp);
+	// $temp = '{"sid":1}';
+	// deleteSchool($temp);
 
 	//Update Student Information
 	//Expects a JSON input for the data with the following info:
 	// studid (required)
-	// uid
-	// firstname
-	// middlename
-	// lastname
-	// birthdate
 	function deleteStudent ($data=null) {
+		if ($data == null) {
+			echo "Error: NO Data Found <Br/>";
+			return http_response_code(400);
+		}
 
+		debugPrint($data);
+
+		//Decode the JSON Data
+		$dataDecode = json_decode($data);
+
+		$studid = isset($dataDecode->studid) ? $dataDecode->studid : null;
+
+		//Required Inputs: Verify if inputs exist
+		if ($studid == null) {
+			//TODO: uid verification
+
+			echo "Error: No studid Input! <Br/>";
+			return http_response_code(400);
+		}
+
+		//Compose delete query
+		$query = "DELETE FROM students WHERE studid = $studid";
+
+		executeQuery($query);
+		debugPrint("Deleted student: $studid! <Br/>");
 	}
 
-	// $temp = '{"studid":1,"firstname":"Septa","middlename":"Hexa",
-	// 		"lastname":"Octa","birthdate":"2000-06-04"}';
-	// updateStudent($temp);
+	// $temp = '{"studid":1}';
+	// deleteStudent($temp);
 
 	//Update Subject Information
 	//Expects a JSON input for the data with the following info:
-	// sid - need to verify that sid exists
-	// subname - subname should always be unique per school
-	// subdesc (optional) - 0b0001
-	// units
-	// priceperunit
+	// subid (required)
 	function deleteSubject ($data=null) {
+		if ($data == null) {
+			echo "Error: NO Data Found <Br/>";
+			return http_response_code(400);
+		}
 
+		debugPrint($data);
+
+		//Decode the JSON Data
+		$dataDecode = json_decode($data);
+
+		$subid = isset($dataDecode->subid) ? $dataDecode->subid : null;
+
+		//Required Inputs: Verify if inputs exist
+		if ($subid == null) {
+			//TODO: uid verification
+
+			echo "Error: No subid Input! <Br/>";
+			return http_response_code(400);
+		}
+
+		//Compose delete query
+		$query = "DELETE FROM subjects WHERE subid = $subid";
+
+		executeQuery($query);
+		debugPrint("Deleted subject: $subid! <Br/>");
 	}
 
-	// $temp = '{"subid":1,"sid":1,"subname":"Math 114","subdesc":"Matrix Manipulation",
-	// 		"units":5,"priceperunit":1328.56}';
-	// updateSubject($temp);
+	// $temp = '{"subid":7}';
+	// deleteSubject($temp);
 
 	//Update Payment Information
 	// Expects a JSON input for the data with the following info:
 	// pid (required)
-	// studid - need to verify that studid exists
-	// sid - need to verify that sid exists
-	// timestamp
-	// schoolperiod (Year, Semester/Quarter)
-	// educlevel
-	// subids (comma separated value; verification of subjects should be done on the front end)
-	// totalunits (pre computed)
-	// fee (pre computed)
-	// pstatus (payment status)
 	function deletePayment ($data=null) {
+		if ($data == null) {
+			echo "Error: NO Data Found <Br/>";
+			return http_response_code(400);
+		}
 
+		debugPrint($data);
+
+		//Decode the JSON Data
+		$dataDecode = json_decode($data);
+
+		$pid = isset($dataDecode->pid) ? $dataDecode->pid : null;
+
+		//Required Inputs: Verify if inputs exist
+		if ($pid == null) {
+			//TODO: uid verification
+
+			echo "Error: No pid Input! <Br/>";
+			return http_response_code(400);
+		}
+
+		//Compose delete query
+		$query = "DELETE FROM payments WHERE pid = $pid";
+
+		executeQuery($query);
+		debugPrint("Deleted payment: $pid! <Br/>");
 	}
 
-	// $temp = '{"pid":1,"pstatus":"paid","tids":"45621586","tidff":"9821366"}';
-	// updatePayment($temp);
+	// $temp = '{"pid":2}';
+	// deletePayment($temp);
 
 /*****************************************************************************/
 
