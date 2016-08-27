@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.17, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.17, for Win32 (x86)
 --
 -- Host: localhost    Database: onlinetuition
 -- ------------------------------------------------------
--- Server version	5.6.17
+-- Server version	5.6.22-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -62,6 +62,8 @@ CREATE TABLE `payments` (
   `totalunits` int(11) NOT NULL,
   `fee` double NOT NULL,
   `pstatus` varchar(16) DEFAULT 'pending',
+  `tids` varchar(45) DEFAULT NULL,
+  `tidff` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`pid`),
   KEY `sid_idx` (`sid`),
   KEY `studid_idx` (`studid`),
@@ -76,7 +78,7 @@ CREATE TABLE `payments` (
 
 LOCK TABLES `payments` WRITE;
 /*!40000 ALTER TABLE `payments` DISABLE KEYS */;
-INSERT INTO `payments` VALUES (1,1,3,'2016-07-29 10:00:00','AY 2016-2017 Sem 1','undergraduate','14,15,16,17,18',15,49148.25,'pending'),(2,2,3,'2016-08-01 11:26:00','AY 2016-2017 Sem 1','undergraduate','14,15,16,17,18',15,49148.25,'pending'),(3,3,1,'2016-07-28 17:23:00','AY 2016-2017 Sem 1','undergraduate','1,2,3',9,13500,'pending'),(4,4,2,'2016-08-02 16:34:00','AY 2016-2017 Sem 1','undergraduate','6,7,8,9,10',15,22500,'pending'),(5,5,4,'2016-07-15 09:38:00','AY 2016-2017 Sem 1','undergraduate','19,20,21,22,23',14,33082,'pending'),(6,6,4,'2016-07-16 10:45:00','AY 2016-2017 Sem 1','undergraduate','19,20,21,22,23',14,33082,'pending'),(7,3,1,'2016-08-05 07:23:00','AY 2016-2017 Sem 1','undergraduate','4,5',6,9000,'pending');
+INSERT INTO `payments` VALUES (1,1,3,'2016-07-29 10:00:00','AY 2016-2017 Sem 1','undergraduate','14,15,16,17,18',15,49148.25,'pending',NULL,NULL),(2,2,3,'2016-08-01 11:26:00','AY 2016-2017 Sem 1','undergraduate','14,15,16,17,18',15,49148.25,'pending',NULL,NULL),(3,3,1,'2016-07-28 17:23:00','AY 2016-2017 Sem 1','undergraduate','1,2,3',9,13500,'pending',NULL,NULL),(4,4,2,'2016-08-02 16:34:00','AY 2016-2017 Sem 1','undergraduate','6,7,8,9,10',15,22500,'pending',NULL,NULL),(5,5,4,'2016-07-15 09:38:00','AY 2016-2017 Sem 1','undergraduate','19,20,21,22,23',14,33082,'pending',NULL,NULL),(6,6,4,'2016-07-16 10:45:00','AY 2016-2017 Sem 1','undergraduate','19,20,21,22,23',14,33082,'pending',NULL,NULL),(7,3,1,'2016-08-05 07:23:00','AY 2016-2017 Sem 1','undergraduate','4,5',6,9000,'pending',NULL,NULL);
 /*!40000 ALTER TABLE `payments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -208,4 +210,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-25 19:56:33
+-- Dump completed on 2016-08-27 19:16:16
