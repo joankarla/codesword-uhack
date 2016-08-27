@@ -19,11 +19,20 @@ There are 6 data types:
 
 /*****************************************************************************/
 
-There are 4 actions:
+There are 5 actions:
+* login
 * read (default)
 * add
 * update
 * delete
+
+/*****************************************************************************/
+
+Login Usage:
+* http://localhost/data/handleData.php?action=login&email=[email address]&pwd=[password]
+
+Ex.
+http://localhost/data/handleData.php?action=login&email=test@gmail.com&pwd=asdfjkl
 
 /*****************************************************************************/
 
