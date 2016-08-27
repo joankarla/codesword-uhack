@@ -1,2 +1,4 @@
 RewriteEngine On
 RewriteRule    ^payment$  index.html [L]
+RewriteRule    ^dashboard$  index.html [L]
+RewriteRule    ^profile$  index.html [L]
