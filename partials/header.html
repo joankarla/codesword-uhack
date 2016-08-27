@@ -1,0 +1,117 @@
+<div class="header clearfix">
+  <nav>
+    <ul class="nav nav-pills pull-right">
+      <li role="presentation" ng-hide="currentUser"><a href="#" ng-click="header.openLogin()">Login</a></li>
+      <li role="presentation" ng-hide="currentUser"><a href="#" ng-click="header.openSignUp()">Sign Up</a></li>
+      <li role="presentation" ng-show="currentUser && currentUser.isTypeSchool()"><a href="/report">Payments</a></li>
+      <li role="presentation" ng-show="currentUser && currentUser.isTypeSchool()"><a href="/subjects">Subjects</a></li>
+      <li role="presentation" ng-show="currentUser && currentUser.isTypeUser()"><a href="/payment">Payment</a></li>
+      <li role="presentation" ng-show="currentUser && currentUser.isTypeUser()"><a href="/payments">History</a></li>
+      <li role="presentation" ng-show="currentUser && currentUser.isTypeUser()"><a href="/dependents">Dependents</a></li>
+      <li role="presentation" ng-show="currentUser"><a href="/profile">Profile</a></li>
+      <li role="presentation" ng-show="currentUser"><a href="#" ng-click="header.signOut()">Logout</a></li>
+
+    </ul>
+  </nav>
+  <h3 class="text-muted">Project name</h3>
+  <h6 ng-show="currentUser">Logged in as <span ng-bind="currentUser.email"></span></h6>
+</div>
+
+<script type="text/ng-template" id="loginModal.html">
+  <div class="modal-header">
+    <h3 class="modal-title" id="modal-title">Login</h3>
+  </div>
+  <form ng-submit="signIn()" name="userForm">
+    <div class="modal-body" id="modal-body">
+      <div class="alert alert-danger" role="alert" ng-show="error.message">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        <span ng-bind="error.message"></span>
+      </div>
+      <div class="input-group" ng-class="{ 'has-error': userForm.email.$invalid && userForm.$dirty }">
+        <input type="email" class="form-control" name="email" ng-model="email"
+               placeholder="Email" aria-describedby="Email" required>
+      </div>
+      <div class="input-group" ng-class="{ 'has-error': userForm.password.$invalid && userForm.$dirty }">
+        <input type="password" class="form-control" name="password" ng-model="password"
+               placeholder="Password" aria-describedby="password" required>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+      <button class="btn btn-primary" type="submit">OK</button>
+    </div>
+  </form>
+</script>
+
+<script type="text/ng-template" id="signUpModal.html">
+  <div class="modal-header">
+    <h3 class="modal-title" id="modal-title">Sign Up</h3>
+  </div>
+  <form ng-submit="createUser(userForm)" name="userForm">
+    <div class="modal-body" id="modal-body">
+      <div class="alert alert-danger" role="alert" ng-show="error.message">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        <span ng-bind="error.message"></span>
+      </div>
+      <div class="input-group" ng-class="{ 'has-error': userForm.email.$invalid && userForm.$dirty }">
+        <input type="email" class="form-control" name="email" ng-model="email"
+               placeholder="Email" aria-label="Email" required>
+      </div>
+      <div class="input-group" ng-class="{ 'has-error': userForm.password.$invalid && userForm.$dirty }">
+        <input type="password" class="form-control" name="password" ng-model="password"
+               placeholder="Password" aria-label="Password" required>
+      </div>
+      <div class="input-group" ng-class="{ 'has-error': userForm.passwordConfirm.$invalid && userForm.$dirty }">
+        <input type="password" class="form-control" name="passwordConfirm" ng-model="passwordConfirm"
+               placeholder="Confirm Password" aria-label="Confirm Password"
+               match-to="password" required>
+      </div>
+      <div class="input-group" ng-class="{ 'has-error': userForm.firstName.$invalid && userForm.$dirty }">
+        <input type="text" class="form-control" name="firstName" ng-model="firstName"
+               placeholder="First Name" aria-label="First Name" required>
+      </div>
+      <div class="input-group" ng-class="{ 'has-error': userForm.middleName.$invalid && userForm.$dirty }">
+        <input type="text" class="form-control" name="middleName" ng-model="middleName"
+               placeholder="Middle Name" aria-label="Middle Name">
+      </div>
+      <div class="input-group" ng-class="{ 'has-error': userForm.lastName.$invalid && userForm.$dirty }">
+        <input type="text" class="form-control" name="lastName" ng-model="lastName"
+               placeholder="Last Name" aria-label="Last Name" required>
+      </div>
+      <div class="input-group" ng-class="{ 'has-error': userForm.address.$invalid && userForm.$dirty }">
+        <input type="text" class="form-control" name="address" ng-model="address"
+               placeholder="Address" aria-label="Address" required>
+      </div>
+      <div class="input-group" ng-class="{ 'has-error': userForm.mobileNumber.$invalid && userForm.$dirty }">
+        <input type="text" class="form-control" name="mobileNumber" ng-model="mobileNumber"
+               placeholder="Mobile Number" aria-label="Mobile Number">
+      </div>
+      <div class="input-group" ng-class="{ 'has-error': userForm.landline.$invalid && userForm.$dirty }">
+        <input type="text" class="form-control" name="landline" ng-model="landline"
+               placeholder="Landline" aria-label="Landline">
+      </div>
+      <div class="btn-group">
+        <label class="btn btn-primary" ng-model="userType" uib-btn-radio="'user'">Sign up to Pay</label>
+        <label class="btn btn-primary" ng-model="userType" uib-btn-radio="'school'">Sign up as School</label>
+      </div>
+
+      <div class="input-group" ng-class="{ 'has-error': userForm.schoolName.$invalid && userForm.$dirty }"
+           ng-show="userType=='school'">
+        <input type="text" class="form-control" name="schoolName" ng-model="schoolName"
+               placeholder="School Name" aria-label="School Name" ng-required="userType=='school'">
+      </div>
+      <div class="input-group" ng-class="{ 'has-error': userForm.schoolAccount.$invalid && userForm.$dirty }"
+           ng-show="userType=='school'">
+        <input type="text" class="form-control" name="schoolAccount" ng-model="schoolAccount"
+               placeholder="School Account Number" aria-label="School Account Number" ng-required="userType=='school'">
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+      <button class="btn btn-primary" type="submit">OK</button>
+    </div>
+  </form>
+</script>
