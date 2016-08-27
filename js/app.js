@@ -744,8 +744,8 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     this.HEADERS = {
       'accept': 'application/json',
       'content-type': 'application/json',
-      'x-ibm-client-id': self.CLIENT_ID,
-      'x-ibm-client-secret': self.CLIENT_SECRET
+      'x-ibm-client-id': this.CLIENT_ID,
+      'x-ibm-client-secret': this.CLIENT_SECRET
     }
 
     var self = this;
@@ -771,22 +771,39 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     UnionBank.processPayment = function(payment, userAccount, schoolAccount) {
       var processingFee = payment.fee * this.PROCESSING_FEE_PERCENT;
       var schoolPayment = payment.fee * (1 - this.PROCESSING_FEE_PERCENT);
+      var self = this;
 
-      // $http.post("https://api.us.apiconnect.ibmcloud.com/ubpapi-dev/sb/api/RESTs/transfer", {
+      return this.processTransaction(payment.pid+"0", schoolPayment, userAccount, schoolAccount).then(function(response){
+        console.log("!!! yes1", response);
 
-      // }, {
-      //   'headers': this.HEADERS
-      // }).then(function(response) {
+        return this.processTransaction(payment.pid+"1", processingFee, userAccount, self.PROCESSING_FEE_ACCOUNT_NUM).then(function(response){
+          console.log("!!! yes2", response)
 
-      // }, function(error){
-      //   return $q.reject({'code':'unionbank.processPayment.'})
-      // });
-
-      return $q.when(true);
+        }, function(error){
+          return $q.reject({'code':'unionbank.processPayment.processFee.error', 'message': 'error transferring processing fee'});
+        })
+      }, function(error){
+        return $q.reject({'code':'unionbank.processPayment.school.error', 'message': 'error transferring payment to school'});
+      })
     };
 
-    UnionBank.processTransaction = function(fee, sourceAccount, targetAccount) {
-      return $q.when(true);
+    UnionBank.processTransaction = function(transactionId, fee, sourceAccount, targetAccount) {
+      return $http.post("https://api.us.apiconnect.ibmcloud.com/ubpapi-dev/sb/api/RESTs/transfer", {
+        "channel_id":this.CHANNEL_ID,
+        "transaction_id":transactionId,
+        "source_account":sourceAccount,
+        "source_currency":"php",
+        "target_account":targetAccount,
+        "target_currency":"php",
+        "amount":fee
+      }, {
+        'headers': this.HEADERS
+      }).then(function(response) {
+        $log.info("successfully transferred", fee,"from", sourceAccount, "to", "targetAccount");
+        return response;
+      }, function(error){
+        return $q.reject(error);
+      });;
     }
 
     return UnionBank;

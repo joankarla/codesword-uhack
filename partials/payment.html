@@ -42,9 +42,9 @@
 
       <div class="form-group" ng-class="{ 'has-error': paymentForm.schoolSelect.$invalid && paymentForm.$dirty }">
         <label for="schoolSelect">Select school to make payment to:</label>
-        <select name="schoolSelect" ng-model="params.selectedSchool" class="form-control" required>
+        <select name="schoolSelect" ng-model="params.sid" class="form-control" required>
           <option value="">---Please select school---</option>
-          <option ng-repeat="school in schools" ng-value="school">{{school.name}}</option>
+          <option ng-repeat="school in schools" ng-value="school.sid">{{school.name}}</option>
         </select>
       </div>
 
