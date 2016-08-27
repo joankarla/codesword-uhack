@@ -1,1 +1,1 @@
-Skin creation from bootstrap. Using template.
+Skin creation from bootstrap.
