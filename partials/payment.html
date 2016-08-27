@@ -1,7 +1,88 @@
 <h3>Payment page</h3>
 <div>
-  <h4>Payment form:</h4>
-  <form>
+  <form name="paymentForm" ng-submit="addPayment(paymentForm)">
+    <div class="btn-group">
+      <label class="btn btn-primary" ng-model="dependentMode" uib-btn-radio="'select'">Select Dependent</label>
+      <label class="btn btn-primary" ng-model="dependentMode" uib-btn-radio="'add'">Add Dependent</label>
+    </div>
+    <div class="form-group" ng-show="dependentMode=='select'" ng-class="{ 'has-error': paymentForm.dependentSelect.$invalid && paymentForm.$dirty }">
+      <select name="dependentSelect" ng-model="params.studid" class="form-control" ng-required="dependentMode=='select'">
+        <option value="">---Please select dependent---</option>
+        <option ng-repeat="dep in students" ng-value="dep.studid">{{dep.firstname}} {{dep.middlename ? dep.middlename + ' ' : ''}}{{dep.lastname}}</option>
+      </select>
+    </div>
+    <div class="form-group" ng-show="dependentMode=='add'">
+      <div class="input-group" ng-class="{ 'has-error': paymentForm.firstName.$invalid && paymentForm.$dirty }">
+        <input type="text" class="form-control" name="firstName" ng-model="params.firstname"
+               placeholder="First Name" aria-label="First Name" ng-required="dependentMode=='add'">
+      </div>
+      <div class="input-group" ng-class="{ 'has-error': paymentForm.middleName.$invalid && paymentForm.$dirty }">
+        <input type="text" class="form-control" name="middleName" ng-model="params.middlename"
+               placeholder="Middle Name" aria-label="Middle Name">
+      </div>
+      <div class="input-group" ng-class="{ 'has-error': paymentForm.lastName.$invalid && paymentForm.$dirty }">
+        <input type="text" class="form-control" name="lastName" ng-model="params.lastname"
+               placeholder="Last Name" aria-label="Last Name" ng-required="dependentMode=='add'">
+      </div>
+      <div class="input-group" ng-class="{ 'has-error': paymentForm.birthDate.$invalid && paymentForm.$dirty }">
+        <input type="text" placeholder="Birth Date" class="form-control" name="birthDate"
+               ng-required="dependentMode=='add'" uib-datepicker-popup="{{datepickerFormat}}" ng-model="params.birthdate" is-open="datepickerOpen"
+               datepicker-options="datepickerOptions" close-on-date-selection="false" ng-focus="datepickerOpen=true">
+        <span class="input-group-btn">
+          <button type="button" class="btn btn-default" ng-click="datepickerOpen=true"><i class="glyphicon glyphicon-calendar"></i></button>
+        </span>
+      </div>
+    </div>
+
+    <div class="form-group" ng-class="{ 'has-error': paymentForm.schoolSelect.$invalid && paymentForm.$dirty }">
+      <label for="schoolSelect">Select school to make payment to:</label>
+      <select name="schoolSelect" ng-model="params.sid" class="form-control" required>
+        <option value="">---Please select school---</option>
+        <option ng-repeat="school in schools" ng-value="school.sid">{{school.name}}</option>
+      </select>
+    </div>
+
+    <div class="form-group" ng-class="{ 'has-error': paymentForm.schoolPeriodSelect.$invalid && paymentForm.$dirty }">
+      <label for="schoolPeriodSelect">Select school period:</label>
+      <select name="schoolPeriodSelect" ng-model="params.schoolperiod" class="form-control" required>
+        <option value="">---Please select school period---</option>
+        <option value="AY 2016-2017">AY 2016-2017</option>
+        <option value="AY 2016-2017 Sem 1">AY 2016-2017 Semester 1</option>
+        <option value="AY 2016-2017 Sem 2">AY 2016-2017 Semester 2</option>
+        <option value="AY 2016-2017 Tri 1">AY 2016-2017 Trimester 1</option>
+        <option value="AY 2016-2017 Tri 2">AY 2016-2017 Trimester 2</option>
+        <option value="AY 2016-2017 Tri 3">AY 2016-2017 Trimester 3</option>
+        <option value="AY 2016-2017 Qtr 1">AY 2016-2017 Quarter 1</option>
+        <option value="AY 2016-2017 Qtr 2">AY 2016-2017 Quarter 2</option>
+        <option value="AY 2016-2017 Qtr 3">AY 2016-2017 Quarter 3</option>
+        <option value="AY 2016-2017 Qtr 4">AY 2016-2017 Quarter 4</option>
+      </select>
+    </div>
+
+    <div class="form-group" ng-class="{ 'has-error': paymentForm.schoolPeriodSelect.$invalid && paymentForm.$dirty }">
+      <label for="schoolPeriodSelect">Select Educational Level:</label>
+      <select name="schoolPeriodSelect" ng-model="params.educlevel" class="form-control" required>
+        <option value="">---Please select level---</option>
+        <option value="preschool">Pre-School</option>
+        <option value="gradeschool">Grade School</option>
+        <option value="highschool">High School</option>
+        <option value="bachelor">Bachelor</option>
+        <option value="master">Master</option>
+        <option value="doctoral">Doctoral</option>
+      </select>
+    </div>
+
+    <!-- TODO: select subjects, display total units computed, total fee computed -->
+    <div class="form-group">
+      <label for="subjectsSelect">Select Subjects</label>
+      <ui-select multiple ng-model="params.subjects" theme="select2" class="form-control" title="Choose a subject">
+        <ui-select-match placeholder="Select or search a subject in the list...">{{$item.subname}}</ui-select-match>
+        <ui-select-choices repeat="item in currentSubjectList | filter: $select.search">
+          <div ng-bind-html="item.subdesc | highlight: $select.search"></div>
+          <small ng-bind-html="item.subname | highlight: $select.search"></small>
+        </ui-select-choices>
+      </ui-select>
+    </div>
 
   </form>
 </div>

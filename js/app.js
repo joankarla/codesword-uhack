@@ -1,8 +1,6 @@
-angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
-
+angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie', 'ui.select', 'ngSanitize'])
 .config(function($stateProvider, $urlRouterProvider, $locationProvider) {
   $locationProvider.html5Mode(true);
-
   $stateProvider.state("index", {
     url: "/",
     views: {
@@ -22,7 +20,6 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
       pageTitle: "Home Page"
     }
   });
-
   $stateProvider.state('paymentPage', {
     url: "/payment",
     views: {
@@ -47,7 +44,6 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
       pageTitle: "Payment"
     }
   });
-
   $stateProvider.state('userPaymentsPage', {
     url: "/payments",
     views: {
@@ -72,7 +68,6 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
       pageTitle: "Payments"
     }
   });
-
   $stateProvider.state('userStudentsPage', {
     url: "/dependents",
     views: {
@@ -97,7 +92,6 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
       pageTitle: "Dependents"
     }
   });
-
   $stateProvider.state('schoolPaymentsPage', {
     url: "/report",
     views: {
@@ -146,7 +140,6 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
       pageTitle: "Subjects"
     }
   });
-
   $stateProvider.state('profilePage', {
     url: "/profile",
     views: {
@@ -171,6 +164,126 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
       pageTitle: "Profile"
     }
   });
+  $stateProvider.state('adminPaymentsPage', {
+    url: "/allPayments",
+    views: {
+      "header": {
+        templateUrl: "partials/header.html",
+        controller: "HeaderController",
+        controllerAs: "header"
+      },
+      "content": {
+        templateUrl: "partials/adminPayments.html",
+        controller: "AdminPaymentsPageCtrl",
+        controllerAs: "adminPayments"
+      }
+    },
+    resolve: {
+      "currentAuth": ["Auth", function(Auth) {
+        return Auth.$requireSignIn();
+      }]
+    },
+    data: {
+      pageId: "admin-payments-page",
+      pageTitle: "All Payments"
+    }
+  });
+  $stateProvider.state('adminSchoolsPage', {
+    url: "/allSchools",
+    views: {
+      "header": {
+        templateUrl: "partials/header.html",
+        controller: "HeaderController",
+        controllerAs: "header"
+      },
+      "content": {
+        templateUrl: "partials/adminSchools.html",
+        controller: "AdminSchoolsPageCtrl",
+        controllerAs: "adminSchools"
+      }
+    },
+    resolve: {
+      "currentAuth": ["Auth", function(Auth) {
+        return Auth.$requireSignIn();
+      }]
+    },
+    data: {
+      pageId: "admin-school-page",
+      pageTitle: "All Schools"
+    }
+  });
+  $stateProvider.state('adminStudentsPage', {
+    url: "/allStudents",
+    views: {
+      "header": {
+        templateUrl: "partials/header.html",
+        controller: "HeaderController",
+        controllerAs: "header"
+      },
+      "content": {
+        templateUrl: "partials/adminStudents.html",
+        controller: "AdminStudentsPageCtrl",
+        controllerAs: "adminStudents"
+      }
+    },
+    resolve: {
+      "currentAuth": ["Auth", function(Auth) {
+        return Auth.$requireSignIn();
+      }]
+    },
+    data: {
+      pageId: "admin-students-page",
+      pageTitle: "All Students"
+    }
+  });
+  $stateProvider.state('adminSubjectsPage', {
+    url: "/allSubjects",
+    views: {
+      "header": {
+        templateUrl: "partials/header.html",
+        controller: "HeaderController",
+        controllerAs: "header"
+      },
+      "content": {
+        templateUrl: "partials/adminSubjects.html",
+        controller: "AdminSubjectsPageCtrl",
+        controllerAs: "adminSubjects"
+      }
+    },
+    resolve: {
+      "currentAuth": ["Auth", function(Auth) {
+        return Auth.$requireSignIn();
+      }]
+    },
+    data: {
+      pageId: "admin-subjects-page",
+      pageTitle: "All subjects"
+    }
+  });
+  $stateProvider.state('adminUsersPage', {
+    url: "/allUsers",
+    views: {
+      "header": {
+        templateUrl: "partials/header.html",
+        controller: "HeaderController",
+        controllerAs: "header"
+      },
+      "content": {
+        templateUrl: "partials/adminUsers.html",
+        controller: "AdminUsersPageCtrl",
+        controllerAs: "adminUsers"
+      }
+    },
+    resolve: {
+      "currentAuth": ["Auth", function(Auth) {
+        return Auth.$requireSignIn();
+      }]
+    },
+    data: {
+      pageId: "admin-users-page",
+      pageTitle: "All Users"
+    }
+  });
 })
 .run(function($rootScope, $state) {
   $rootScope.$on("$stateChangeError", function(event, toState, toParams, fromState, fromParams, error) {
@@ -182,9 +295,66 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
     $rootScope.stateData = angular.copy(toState.data);
   });
 })
-.factory("Auth", ["$firebaseAuth",
-  function($firebaseAuth) {
-    return $firebaseAuth();
+.factory("Auth", ["$firebaseAuth", "$q", "ipCookie", "User",
+  function($firebaseAuth, $q, ipCookie, User) {
+    // uncomment to user Firebase for session management:
+    // return $firebaseAuth();
+
+    // uncomment to mock Firebase for demo if no internet available:
+    function Auth() {}
+    Auth.userPromise = function() {
+      if (ipCookie('USER')) {
+        var user = {
+          'email': ipCookie('USER')
+        };
+        console.log("!!! ipCookie", ipCookie('USER'), user);
+        return $q.when(user);
+      } else {
+        console.log("!!! userPromise reject");
+        return $q.reject('unauthorized');
+      }
+    }
+
+    Auth.$requireSignIn = function() {
+      console.log("!!! requireSignIn", ipCookie('USER'));
+      return Auth.userPromise();
+    }
+
+    Auth.$onAuthStateChanged = function(successCallback) {
+      console.log("!!! onAuthStateChanged", ipCookie('USER'));
+      if (ipCookie('USER')) {
+        successCallback({'email': ipCookie('USER')});
+      }
+    }
+
+    Auth.$signOut = function() {
+      console.log("!!! signOut", ipCookie('USER'));
+      ipCookie.remove('USER');
+      return $q.when(true);
+    }
+
+    Auth.$signInWithEmailAndPassword = function(email, password) {
+      console.log("!!! signInWithEmailAndPassword", ipCookie('USER'));
+      if (true) { //TODO: local db login verification
+        ipCookie('USER', email);
+        return Auth.userPromise();
+      } else {
+        return $q.reject('Wrong email/password. Please try again.');
+      }
+    }
+
+    Auth.$createUserWithEmailAndPassword = function(email, password) {
+      console.log("!!! createUserWithEmailAndPassword", ipCookie('USER'));
+      ipCookie('USER', email);
+      return Auth.userPromise();
+    }
+
+    Auth.$waitForSignIn = function() {
+      console.log("!!! waitForSignIn", ipCookie('USER'));
+      return $q.when(true);
+    }
+
+    return Auth;
   }
 ])
 .factory("User", ["$http", "$q", "$log", "$rootScope", "Payment", "School", "Student",
@@ -232,7 +402,6 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
       return $http.get(schoolInfoUrl+params).then(function(response) {
         $log.info("successfully fetched school info", response.data[0]);
         var school = new School(response.data[0]);
-        $rootScope.currentUser.school = school;
         return school;
       }, function(response) {
         $log.warn("Cannot get school info " + response);
@@ -270,6 +439,25 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
         return students;
       }, function(response) {
         $log.warn("Cannot get school subjects " + response);
+        return $q.reject(response);
+      });
+    }
+
+    User.getAllUsers = function() {
+      if (!$rootScope.currentUser.isTypeAdmin()) {
+        return $q.reject("access denied");
+      }
+      var usersUrl = "http://localhost/data/handleData.php?utype=admin&dtype=users";
+      return $http.get(usersUrl).then(function(response) {
+        var i, len, users = [];
+        for (i = 0, len = response.data.length; i < len; i++) {
+          users.push(new User(response.data[i]));
+        }
+
+        $log.info("successfully fetched all users", users);
+        return users;
+      }, function(response) {
+        $log.warn("Cannot get all users " + response);
         return $q.reject(response);
       });
     }
@@ -326,6 +514,22 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
       });
     }
 
+    School.getAllSchools = function() {
+      var schoolsUrl = "http://localhost/data/handleData.php?utype=admin&dtype=schools";
+      return $http.get(schoolsUrl).then(function(response) {
+        var i, len, schools = [];
+        for (i = 0, len = response.data.length; i < len; i++) {
+          schools.push(new School(response.data[i]));
+        }
+
+        $log.info("successfully fetched all schools", schools);
+        return schools;
+      }, function(response) {
+        $log.warn("Cannot get all schools " + response);
+        return $q.reject(response);
+      });
+    }
+
     return School;
   }
 ])
@@ -338,6 +542,25 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
         this.birthdate = new Date(this.birthdate);
       }
     }
+
+    Student.getAllStudents = function() {
+      if (!$rootScope.currentUser.isTypeAdmin()) {
+        return $q.reject("access denied");
+      }
+      var studentsUrl = "http://localhost/data/handleData.php?utype=admin&dtype=students";
+      return $http.get(studentsUrl).then(function(response) {
+        var i, len, students = [];
+        for (i = 0, len = response.data.length; i < len; i++) {
+          students.push(new Student(response.data[i]));
+        }
+
+        $log.info("successfully fetched all students", students);
+        return students;
+      }, function(response) {
+        $log.warn("Cannot get all students " + response);
+        return $q.reject(response);
+      });
+    }
     return Student;
   }
 ]).factory("Subject", ["$http", "$q", "$log", "$rootScope",
@@ -345,6 +568,22 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
     function Subject(apiData) {
       apiData = apiData || {};
       angular.extend(this, apiData);
+    }
+
+    Subject.getAllSubjects = function() {
+      var subjectsUrl = "http://localhost/data/handleData.php?utype=admin&dtype=subjects";
+      return $http.get(subjectsUrl).then(function(response) {
+        var i, len, subjects = [];
+        for (i = 0, len = response.data.length; i < len; i++) {
+          subjects.push(new Subject(response.data[i]));
+        }
+
+        $log.info("successfully fetched all subjects", subjects);
+        return subjects;
+      }, function(response) {
+        $log.warn("Cannot get all subjects " + response);
+        return $q.reject(response);
+      });
     }
     return Subject;
   }
@@ -358,6 +597,25 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
         this.timestamp = new Date(this.timestamp);
       }
     }
+
+    Payment.getAllPayments = function () {
+      if (!$rootScope.currentUser.isTypeAdmin()) {
+        return $q.reject("access denied");
+      }
+      var paymentsUrl = "http://localhost/data/handleData.php?utype=admin&dtype=payments";
+      return $http.get(subjectsUrl).then(function(response) {
+        var i, len, payments = [];
+        for (i = 0, len = response.data.length; i < len; i++) {
+          payments.push(new Payment(response.data[i]));
+        }
+
+        $log.info("successfully fetched all subjects", payments);
+        return payments;
+      }, function(response) {
+        $log.warn("Cannot get all subjects " + response);
+        return $q.reject(response);
+      });
+    }
     return Payment;
   }
 ])
@@ -368,6 +626,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
     Auth.$onAuthStateChanged(function(firebaseUser) {
       if (!firebaseUser)
         return;
+
       $rootScope.currentUser = new User(firebaseUser);
 
       $rootScope.profilePromise = $rootScope.currentUser.getInfo().then(function(user) {
@@ -442,10 +701,12 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
       $rootScope.currentUser = new User(firebaseUser);
 
       $rootScope.currentUser.getInfo().then(function (profile){
-        if (profile.usertype == 'user') {
+        if (profile.isTypeUser()) {
           $window.location.replace("/payment");
-        } else if (profile.usertype = 'school') {
+        } else if (profile.isTypeSchool()) {
           $window.location.replace("/report");
+        } else if (profile.isTypeAdmin()){
+          $window.location.replace("/allPayments");
         }
       }, function(error) {
         $log.error("sign in redirect failed", error);
@@ -492,15 +753,15 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
         profile.landline = $scope.landline ? $scope.landline : null;
         profile.usertype = $scope.userType;
 
-        if(profile.usertype == 'school') {
+        if(profile.isTypeSchool) {
           profile.schoolName = $scope.schoolName;
           profile.schoolAccount = $scope.schoolAccount;
         }
 
         profile.saveInfo().then(function() {
-          if (profile.usertype == 'user') {
+          if (profile.isTypeUser()) {
             $window.location.replace("/payment");
-          } else if (profile.usertype == 'school') {
+          } else if (profile.isTypeSchool()) {
             $window.location.replace("/report");
           }
           $uibModalInstance.close();
@@ -516,9 +777,76 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
     $uibModalInstance.dismiss('cancel');
   };
 })
+.controller('PaymentPageCtrl', function ($scope, $rootScope, $log, School, Subject) {
+  $scope.datepickerOptions = {
+    'datepickerMode': 'year',
+    'maxDate': new Date()
+  }
+  $scope.datepickerFormat = 'yyyy-MM-dd';
+  $scope.datepickerOpen = true;
+  $scope.params = {
+    'sid': null
+  }
+  $scope.currentSubjectList = [];
 
-.controller('PaymentPageCtrl', function ($scope) {
+  $scope.$watch(function() {
+    return $scope.params.sid
+  }, function(sid){
+    $scope.currentSubjectList = ($scope.params.sid && $scope.subjectsBySid[sid]) ? $scope.subjectsBySid[sid] : [];
+    $scope.params.subjects = [];
+  }, true);
 
+  School.getAllSchools().then(function(schools) {
+    $scope.schools = schools;
+
+    Subject.getAllSubjects().then(function(subjects) {
+      $scope.subjectsBySid = {};
+      var i, len;
+      for (i = 0, len = subjects.length; i < len; i++) {
+        if (!(subjects[i].sid in $scope.subjectsBySid)) {
+          $scope.subjectsBySid[subjects[i].sid] = [];
+        }
+        $scope.subjectsBySid[subjects[i].sid].push(subjects[i])
+      }
+
+    }, function(error) {
+      $scope.error = error;
+      $log.error(error);
+    });
+  }, function(error){
+    $log.error = error;
+  })
+
+  $rootScope.profilePromise.then(function(user) {
+    if (!user)
+      return;
+
+    user.getStudents().then(function(students) {
+      $scope.students = students;
+      if (students) {
+        $scope.dependentMode = 'select';
+      } else {
+        $scope.dependentMode = 'add';
+      }
+    }, function(error) {
+      $scope.error = error;
+      $log.error(error);
+    });
+  }, function(error) {
+    $log.error(error);
+  });
+
+  $scope.addPayment = function(form) {
+    if (dependentMode=='add') {
+      //add dependent
+      //set $scope.params.studid = resulting studid
+    }
+
+    //var result = objArray.map(function(a) {return a.foo;});
+    //calculate fees
+
+    //redirect to payment history for sucessful payment
+  };
 })
 .controller('LandingPageCtrl', function ($scope) {
 
@@ -529,6 +857,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
       return;
 
     user.getSchoolInfo().then(function(school) {
+      $rootScope.currentUser.school = school;
       school.getPaymentsReceived().then(function(payments) {
         $scope.payments = payments;
       }, function(error) {
@@ -548,6 +877,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
       return;
 
     user.getSchoolInfo().then(function(school) {
+      $rootScope.currentUser.school = school;
       school.getSubjects().then(function(subjects) {
         $scope.subjects = subjects;
       }, function(error) {
@@ -591,6 +921,91 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
     $log.error(error);
   });
 })
+.controller('AdminPaymentsPageCtrl', function($scope, $log, $rootScope, Payment) {
+  $rootScope.profilePromise.then(function(user) {
+    if (!user || !user.isTypeAdmin()) {
+      $scope.error = "access denied";
+      return;
+    }
+
+    Payment.getAllPayments().then(function(payments) {
+      $scope.payments = payments;
+    }, function(error) {
+      $scope.error = error;
+      $log.error(error);
+    });
+  }, function(error) {
+    $log.error(error);
+  });
+})
+.controller('AdminSchoolsPageCtrl', function($scope, $log, $rootScope, School) {
+  $rootScope.profilePromise.then(function(user) {
+    if (!user || !user.isTypeAdmin()) {
+      $scope.error = "access denied";
+      return;
+    }
+
+    School.getAllSchools().then(function(schools) {
+      $scope.schools = schools;
+    }, function(error) {
+      $scope.error = error;
+      $log.error(error);
+    });
+  }, function(error) {
+    $log.error(error);
+  });
+})
+.controller('AdminStudentsPageCtrl', function($scope, $log, $rootScope, Student) {
+  $rootScope.profilePromise.then(function(user) {
+    if (!user || !user.isTypeAdmin()) {
+      $scope.error = "access denied";
+      return;
+    }
+
+    Student.getAllStudents().then(function(students) {
+      $scope.students = students;
+    }, function(error) {
+      $scope.error = error;
+      $log.error(error);
+    });
+  }, function(error) {
+    $log.error(error);
+  });
+})
+.controller('AdminSubjectsPageCtrl', function($scope, $log, $rootScope, Subject) {
+  $rootScope.profilePromise.then(function(user) {
+    if (!user || !user.isTypeAdmin()) {
+      $scope.error = "access denied";
+      return;
+    }
+
+    Subject.getAllSubjects().then(function(subjects) {
+      $scope.subjects = subjects;
+    }, function(error) {
+      $scope.error = error;
+      $log.error(error);
+    });
+  }, function(error) {
+    $log.error(error);
+  });
+})
+.controller('AdminUsersPageCtrl', function($scope, $log, $rootScope, User) {
+  $rootScope.profilePromise.then(function(user) {
+    if (!user || !user.isTypeAdmin()) {
+      $scope.error = "access denied";
+      return;
+    }
+
+    User.getAllUsers().then(function(users) {
+      $scope.users = users;
+    }, function(error) {
+      $scope.error = error;
+      $log.error(error);
+    });
+  }, function(error) {
+    $log.error(error);
+  });
+})
 
 .controller('ProfilePageCtrl', function ($scope, $rootScope, $log) {
   $rootScope.profilePromise.then(function(user) {
@@ -599,6 +1014,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
 
     if (user.isTypeSchool()) {
       user.getSchoolInfo().then(function(schoolInfo) {
+        $rootScope.currentUser.school = school;
       }, function(error) {
         $scope.error = error;
         $log.error(error)

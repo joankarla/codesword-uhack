@@ -8,6 +8,11 @@
       <li role="presentation" ng-show="currentUser && currentUser.isTypeUser()"><a href="/payment">Payment</a></li>
       <li role="presentation" ng-show="currentUser && currentUser.isTypeUser()"><a href="/payments">History</a></li>
       <li role="presentation" ng-show="currentUser && currentUser.isTypeUser()"><a href="/dependents">Dependents</a></li>
+      <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allUsers">Users</a></li>
+      <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allSubjects">Subjects</a></li>
+      <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allStudents">Students</a></li>
+      <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allSchools">Schools</a></li>
+      <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allPayments">Payments</a></li>
       <li role="presentation" ng-show="currentUser"><a href="/profile">Profile</a></li>
       <li role="presentation" ng-show="currentUser"><a href="#" ng-click="header.signOut()">Logout</a></li>
 
@@ -29,10 +34,12 @@
         <span ng-bind="error.message"></span>
       </div>
       <div class="input-group" ng-class="{ 'has-error': userForm.email.$invalid && userForm.$dirty }">
+        <span class="input-group-addon"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></span>
         <input type="email" class="form-control" name="email" ng-model="email"
                placeholder="Email" aria-describedby="Email" required>
       </div>
       <div class="input-group" ng-class="{ 'has-error': userForm.password.$invalid && userForm.$dirty }">
+        <span class="input-group-addon"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></span>
         <input type="password" class="form-control" name="password" ng-model="password"
                placeholder="Password" aria-describedby="password" required>
       </div>

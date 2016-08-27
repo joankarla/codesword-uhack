@@ -1,0 +1,26 @@
+<h3>Admin</h3>
+<div ng-cloak="profilePromise">
+  <h4>All Users:</h4>
+  <div class="table-responsive">
+    <table class="table" ng-show="users">
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Address</th>
+        <th>Mobile</th>
+        <th>Landline</th>
+        <th>User Type</th>
+        <th>School</th>
+      </tr>
+      <tr ng-repeat="user in users">
+        <td>{{user.firstname}} {{user.middlename ? user.middlename + ' ' : ''}}{{user.lastname}}</td>
+        <td ng-bind="user.email"></td>
+        <td ng-bind="user.address"></td>
+        <td ng-bind="user.mobile"></td>
+        <td ng-bind="user.landline"></td>
+        <td ng-bind="user.usertype"></td>
+        <td ng-bind="user.schoolName"></td>
+      </tr>
+    </table>
+  </div>
+</div>
