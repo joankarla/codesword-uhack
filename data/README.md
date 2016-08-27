@@ -19,10 +19,11 @@ There are 6 data types:
 
 /*****************************************************************************/
 
-There are 3 actions:
+There are 4 actions:
 * read (default)
 * add
 * update
+* delete
 
 /*****************************************************************************/
 
@@ -85,5 +86,25 @@ Ex.4. Update Subject
 
 Ex.5. Update Payment
 * http://localhost/data/handleData.php?dtype=payments&action=update&data={"pid":6,"pstatus":"paid"}
+
+/*****************************************************************************/
+
+Delete Usage ("utype" is not needed to call "Update" functions)
+* http://localhost/data/handleData.php?dtype=[data type]&action=[action type]&data=[json input]
+
+Ex.1. Delete User
+* http://localhost/data/handleData.php?dtype=users&action=delete&data={"uid":1}
+
+Ex.2. Delete Student
+* http://localhost/data/handleData.php?dtype=students&action=delete&data={"studid":2}
+
+Ex.3. Delete School
+* http://localhost/data/handleData.php?dtype=schools&action=delete&data={"sid":3}
+
+Ex.4. Delete Subject
+* http://localhost/data/handleData.php?dtype=subjects&action=delete&data={"subid":4}
+
+Ex.5. Delete Payment
+* http://localhost/data/handleData.php?dtype=payments&action=delete&data={"pid":6}
 
 /*****************************************************************************/
