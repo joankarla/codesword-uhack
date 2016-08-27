@@ -1,4 +1,4 @@
-angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
+angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie', 'ui.select', 'ngSanitize'])
 .config(function($stateProvider, $urlRouterProvider, $locationProvider) {
   $locationProvider.html5Mode(true);
   $stateProvider.state("index", {
@@ -295,9 +295,66 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
     $rootScope.stateData = angular.copy(toState.data);
   });
 })
-.factory("Auth", ["$firebaseAuth",
-  function($firebaseAuth) {
-    return $firebaseAuth();
+.factory("Auth", ["$firebaseAuth", "$q", "ipCookie", "User",
+  function($firebaseAuth, $q, ipCookie, User) {
+    // uncomment to user Firebase for session management:
+    // return $firebaseAuth();
+
+    // uncomment to mock Firebase for demo if no internet available:
+    function Auth() {}
+    Auth.userPromise = function() {
+      if (ipCookie('USER')) {
+        var user = {
+          'email': ipCookie('USER')
+        };
+        console.log("!!! ipCookie", ipCookie('USER'), user);
+        return $q.when(user);
+      } else {
+        console.log("!!! userPromise reject");
+        return $q.reject('unauthorized');
+      }
+    }
+
+    Auth.$requireSignIn = function() {
+      console.log("!!! requireSignIn", ipCookie('USER'));
+      return Auth.userPromise();
+    }
+
+    Auth.$onAuthStateChanged = function(successCallback) {
+      console.log("!!! onAuthStateChanged", ipCookie('USER'));
+      if (ipCookie('USER')) {
+        successCallback({'email': ipCookie('USER')});
+      }
+    }
+
+    Auth.$signOut = function() {
+      console.log("!!! signOut", ipCookie('USER'));
+      ipCookie.remove('USER');
+      return $q.when(true);
+    }
+
+    Auth.$signInWithEmailAndPassword = function(email, password) {
+      console.log("!!! signInWithEmailAndPassword", ipCookie('USER'));
+      if (true) { //TODO: local db login verification
+        ipCookie('USER', email);
+        return Auth.userPromise();
+      } else {
+        return $q.reject('Wrong email/password. Please try again.');
+      }
+    }
+
+    Auth.$createUserWithEmailAndPassword = function(email, password) {
+      console.log("!!! createUserWithEmailAndPassword", ipCookie('USER'));
+      ipCookie('USER', email);
+      return Auth.userPromise();
+    }
+
+    Auth.$waitForSignIn = function() {
+      console.log("!!! waitForSignIn", ipCookie('USER'));
+      return $q.when(true);
+    }
+
+    return Auth;
   }
 ])
 .factory("User", ["$http", "$q", "$log", "$rootScope", "Payment", "School", "Student",
@@ -514,9 +571,6 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
     }
 
     Subject.getAllSubjects = function() {
-      if (!$rootScope.currentUser.isTypeAdmin()) {
-        return $q.reject("access denied");
-      }
       var subjectsUrl = "http://localhost/data/handleData.php?utype=admin&dtype=subjects";
       return $http.get(subjectsUrl).then(function(response) {
         var i, len, subjects = [];
@@ -549,16 +603,16 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
         return $q.reject("access denied");
       }
       var paymentsUrl = "http://localhost/data/handleData.php?utype=admin&dtype=payments";
-      return $http.get(paymentsUrl).then(function(response) {
+      return $http.get(subjectsUrl).then(function(response) {
         var i, len, payments = [];
         for (i = 0, len = response.data.length; i < len; i++) {
           payments.push(new Payment(response.data[i]));
         }
 
-        $log.info("successfully fetched all payments", payments);
+        $log.info("successfully fetched all subjects", payments);
         return payments;
       }, function(response) {
-        $log.warn("Cannot get all payments " + response);
+        $log.warn("Cannot get all subjects " + response);
         return $q.reject(response);
       });
     }
@@ -572,6 +626,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
     Auth.$onAuthStateChanged(function(firebaseUser) {
       if (!firebaseUser)
         return;
+
       $rootScope.currentUser = new User(firebaseUser);
 
       $rootScope.profilePromise = $rootScope.currentUser.getInfo().then(function(user) {
@@ -722,8 +777,76 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase'])
     $uibModalInstance.dismiss('cancel');
   };
 })
-.controller('PaymentPageCtrl', function ($scope) {
+.controller('PaymentPageCtrl', function ($scope, $rootScope, $log, School, Subject) {
+  $scope.datepickerOptions = {
+    'datepickerMode': 'year',
+    'maxDate': new Date()
+  }
+  $scope.datepickerFormat = 'yyyy-MM-dd';
+  $scope.datepickerOpen = true;
+  $scope.params = {
+    'sid': null
+  }
+  $scope.currentSubjectList = [];
 
+  $scope.$watch(function() {
+    return $scope.params.sid
+  }, function(sid){
+    $scope.currentSubjectList = ($scope.params.sid && $scope.subjectsBySid[sid]) ? $scope.subjectsBySid[sid] : [];
+    $scope.params.subjects = [];
+  }, true);
+
+  School.getAllSchools().then(function(schools) {
+    $scope.schools = schools;
+
+    Subject.getAllSubjects().then(function(subjects) {
+      $scope.subjectsBySid = {};
+      var i, len;
+      for (i = 0, len = subjects.length; i < len; i++) {
+        if (!(subjects[i].sid in $scope.subjectsBySid)) {
+          $scope.subjectsBySid[subjects[i].sid] = [];
+        }
+        $scope.subjectsBySid[subjects[i].sid].push(subjects[i])
+      }
+
+    }, function(error) {
+      $scope.error = error;
+      $log.error(error);
+    });
+  }, function(error){
+    $log.error = error;
+  })
+
+  $rootScope.profilePromise.then(function(user) {
+    if (!user)
+      return;
+
+    user.getStudents().then(function(students) {
+      $scope.students = students;
+      if (students) {
+        $scope.dependentMode = 'select';
+      } else {
+        $scope.dependentMode = 'add';
+      }
+    }, function(error) {
+      $scope.error = error;
+      $log.error(error);
+    });
+  }, function(error) {
+    $log.error(error);
+  });
+
+  $scope.addPayment = function(form) {
+    if (dependentMode=='add') {
+      //add dependent
+      //set $scope.params.studid = resulting studid
+    }
+
+    //var result = objArray.map(function(a) {return a.foo;});
+    //calculate fees
+
+    //redirect to payment history for sucessful payment
+  };
 })
 .controller('LandingPageCtrl', function ($scope) {
 
