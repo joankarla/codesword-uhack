@@ -93,6 +93,9 @@
 		elseif ($dataType == "payments") {
 			addPayment($data);
 		}
+		elseif ($dataType == "accounts") {
+			addAccount($data);
+		}
 	}
 	elseif ($action == "update") {
 		if ($dataType == "users") {

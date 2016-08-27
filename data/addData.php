@@ -476,6 +476,49 @@
 		echo json_encode($allRows);return true;
 	}
 
+	//Add Account Information
+	//Expects a JSON input for the data with the following info:
+	// uid
+	// accountnum
+	function addAccount ($data=null) {
+		if ($data == null) {
+			echo "Error: NO Data Found <Br/>";
+		}
+
+		debugPrint($data);
+
+		//Decode the JSON Data
+		$dataDecode = json_decode($data);
+
+		$uid = isset($dataDecode->uid) ? $dataDecode->uid : null;
+		$accountnum = isset($dataDecode->accountnum) ? $dataDecode->accountnum : null;
+
+		//Required Inputs: Verify if inputs exist
+		if ($uid == null) {
+			echo "Error: No uid Input! <Br/>";
+			return http_response_code(400);
+		}
+		if ($accountnum == null) {
+			echo "Error: No accountnum Input! <Br/>";
+			return http_response_code(400);
+		}
+
+		//Compose the required inputs
+		$columns = "uid,accountnum";
+		$colValues = "'$uid','$accountnum'";
+
+		$query = "INSERT INTO accounts ($columns) VALUES ($colValues)";
+
+		executeQuery($query);
+		debugPrint("Added New Account! <Br/>");
+
+		$query = "SELECT * FROM accounts
+					WHERE aid = (SELECT MAX(aid) from accounts)";
+		$allRows = executeQuery($query);
+
+		echo json_encode($allRows);
+	}
+
 /*****************************************************************************/
 
 ?>
