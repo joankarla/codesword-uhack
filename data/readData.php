@@ -87,7 +87,7 @@
 					    CONCAT(users.firstname, ' ', users.middlename, ' ', users.lastname) as payor,
 					    CONCAT(students.firstname, ' ', students.middlename, ' ', students.lastname) as studentEnrolled, 
 					    schools.name as school,
-					    timestamp, schoolperiod, educlevel, subids, totalunits, fee 
+					    timestamp, schoolperiod, educlevel, subids, totalunits, fee, pstatus
 					FROM 
 						payments, students, users, schools
 					WHERE 
@@ -131,7 +131,7 @@
 					    CONCAT(users.firstname, ' ', users.middlename, ' ', users.lastname) as payor,
 					    CONCAT(students.firstname, ' ', students.middlename, ' ', students.lastname) as studentEnrolled, 
 					    schools.name as school,
-					    timestamp, schoolperiod, educlevel, subids, totalunits, fee 
+					    timestamp, schoolperiod, educlevel, subids, totalunits, fee, pstatus
 					FROM 
 						payments, students, users, schools
 					WHERE 
@@ -236,7 +236,7 @@
 						pid, 
 					    CONCAT(students.firstname, ' ', students.middlename, ' ', students.lastname) as studentEnrolled, 
 					    schools.name as school,
-					    timestamp, schoolperiod, educlevel, subids, totalunits, fee 
+					    timestamp, schoolperiod, educlevel, subids, totalunits, fee, pstatus
 					FROM 
 						payments, students, users, schools
 					WHERE 
