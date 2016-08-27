@@ -1,1 +1,1 @@
-Skin creation from bootstrap. This is a second attempt.
+Skin creation from bootstrap.
