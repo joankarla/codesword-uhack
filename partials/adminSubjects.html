@@ -1,26 +1,28 @@
-<h3>Admin</h3>
-<div ng-cloak="profilePromise">
-  <h4>All Subjects:</h4>
-  <div ng-show="subjects">
-    <div class="table-responsive">
-      <table class="table">
-        <tr>
-          <th>School</th>
-          <th>Subject Name</th>
-          <th>Description</th>
-          <th>Units</th>
-          <th>Price Per Unit</th>
-          <th>Fee</th>
-        </tr>
-        <tr ng-repeat="sub in subjects">
-          <td ng-bind="sub.schoolName"></td>
-          <td ng-bind="sub.subname"></td>
-          <td ng-bind="sub.subdesc"></td>
-          <td ng-bind="sub.units"></td>
-          <td>₱{{sub.priceperunit|number:2}}</td>
-          <td>₱{{(sub.units * sub.priceperunit)|number:2}}</td>
-        </tr>
-      </table>
+<div class="scaler">
+  <h3>Admin</h3>
+  <div ng-cloak="profilePromise">
+    <h4>All Subjects:</h4>
+    <div ng-show="subjects">
+      <div class="table-responsive">
+        <table class="table">
+          <tr>
+            <th>School</th>
+            <th>Subject Name</th>
+            <th>Description</th>
+            <th>Units</th>
+            <th>Price Per Unit</th>
+            <th>Fee</th>
+          </tr>
+          <tr ng-repeat="sub in subjects">
+            <td ng-bind="sub.schoolName"></td>
+            <td ng-bind="sub.subname"></td>
+            <td ng-bind="sub.subdesc"></td>
+            <td ng-bind="sub.units"></td>
+            <td>₱{{sub.priceperunit|number:2}}</td>
+            <td>₱{{(sub.units * sub.priceperunit)|number:2}}</td>
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
 </div>
