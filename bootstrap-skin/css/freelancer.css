@@ -72,11 +72,23 @@ hr.star-primary:after {
 .img-centered {
   margin: 0 auto;
 }
+
+th {
+  font-family: "Lato";
+  font-size: 20px;
+}
+
+td {
+  font-family: "Lato";
+  font-size: 20px;
+}
+
 header {
   text-align: center;
   /*background: #18BC9C;*/                                                                              /* Header Color*/
   background: linear-gradient(#93D4FF, white); /* Standard syntax */
   color: white;
+  transition: all 0.5s;
 }
 header .container {
   padding-top: 100px;
@@ -137,6 +149,7 @@ header .intro-text .skills {
 }
 .navbar-custom .navbar-nav li a {
   color: white;
+  transition: all 0.5s;
 }
 .navbar-custom .navbar-nav li a:hover {
   color: #18BC9C;
@@ -197,8 +210,8 @@ section h2 {
 }
 section.success {
   /*background: #18BC9C;*/                                                        /*Content Color*/
-  background-color: #93D4FF;
-  color: white;
+  background-color: #FFFFFF;
+  color: #585858;
 }
 @media (max-width: 767px) {
   section {
@@ -323,9 +336,10 @@ footer .footer-below {
   background-color: #233140;
 }
 .btn-outline {
-  color: white;
+
+  color: #585858;
   font-size: 20px;
-  border: solid 2px white;
+  border: solid 2px #585858;
   background: transparent;
   transition: all 0.3s ease-in-out;
   margin-top: 15px;
@@ -334,9 +348,10 @@ footer .footer-below {
 .btn-outline:focus,
 .btn-outline:active,
 .btn-outline.active {
-  color: #18BC9C;
-  background: white;
-  border: solid 2px white;
+  color: white;
+  background: #233140;
+  border: solid 2px #233140;
+  /*border: solid 2px white;*/
 }
 .btn-primary {
   color: white;
@@ -431,6 +446,7 @@ fieldset[disabled] .btn-success.active {
   text-align: center;
   font-size: 20px;
   line-height: 45px;
+  color: white;
 }
 .btn:focus,
 .btn:active,
