@@ -190,7 +190,7 @@
 			$ctr++;
 		}
 		if ($opMask & $opSid) {
-						if (!$isFirst) {
+			if (!$isFirst) {
 				$setClause = $setClause . ",";
 			}
 			$setClause = $setClause . "sid='$sid'";
@@ -198,7 +198,7 @@
 			$ctr++;
 		}
 		if ($opMask & $opPassword) {
-						if (!$isFirst) {
+			if (!$isFirst) {
 				$setClause = $setClause . ",";
 			}
 			$setClause = $setClause . "password='$password'";
@@ -206,7 +206,7 @@
 			$ctr++;
 		}
 		if ($opMask & $opEmail) {
-						if (!$isFirst) {
+			if (!$isFirst) {
 				$setClause = $setClause . ",";
 			}
 			$setClause = $setClause . "email='$email'";

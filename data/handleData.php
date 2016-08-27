@@ -1,6 +1,7 @@
 <?php
 	require_once('readData.php');
 	require_once('addData.php');
+	require_once('updateData.php');
 
 	//Provide Data for the following:
 	// Administrators 	-	(admin)

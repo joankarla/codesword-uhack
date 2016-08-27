@@ -4,7 +4,7 @@
 	$mysql_user = "uhack";
 	$mysql_password = "unionbank";
 
-	$debug = false;
+	$debug = true;
 
 	function isDebugMode() {
 		return $GLOBALS["debug"];
