@@ -185,6 +185,37 @@
 	// $temp = '{"pid":2}';
 	// deletePayment($temp);
 
+	//Update Payment Information
+	// Expects a JSON input for the data with the following info:
+	// aid (required)
+	function deleteAccount ($data=null) {
+		if ($data == null) {
+			echo "Error: NO Data Found <Br/>";
+			return http_response_code(400);
+		}
+
+		debugPrint($data);
+
+		//Decode the JSON Data
+		$dataDecode = json_decode($data);
+
+		$aid = isset($dataDecode->aid) ? $dataDecode->aid : null;
+
+		//Required Inputs: Verify if inputs exist
+		if ($aid == null) {
+			//TODO: uid verification
+
+			echo "Error: No aid Input! <Br/>";
+			return http_response_code(400);
+		}
+
+		//Compose delete query
+		$query = "DELETE FROM accounts WHERE aid = $aid";
+
+		executeQuery($query);
+		debugPrint("Deleted payment: $aid! <Br/>");
+	}
+
 /*****************************************************************************/
 
 ?>
