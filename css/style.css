@@ -6,6 +6,7 @@
 body {
   font-family: 'Lato';
   overflow-x: hidden;
+  margin-top: 70px;
 }
 p {
   font-size: 20px;

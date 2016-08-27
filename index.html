@@ -35,6 +35,7 @@
 
 <body id="{{stateData.pageId}}" ng-controller="SampleAppController">
   <div ui-view="header"></div>
+  <h6 ng-show="currentUser">Logged in as <span ng-bind="currentUser.email"></span></h6>
   <div ui-view="content" class="content" autoscroll="true"></div>
   <div ui-view="footer"></div>
 
