@@ -1,0 +1,1 @@
+Skin creation from bootstrap.
