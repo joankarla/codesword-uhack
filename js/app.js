@@ -646,7 +646,8 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     };
     return Student;
   }
-]).factory("Subject", ["$http", "$q", "$log", "$rootScope",
+])
+.factory("Subject", ["$http", "$q", "$log", "$rootScope",
   function($http, $q, $log, $rootScope) {
     function Subject(apiData) {
       apiData = apiData || {};
@@ -726,6 +727,77 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
       });
     };
     return Payment;
+  }
+])
+.factory("UnionBank", ["$http", "$q", "$log", "$rootScope",
+  function($http, $q, $log, $rootScope) {
+    function UnionBank(apiData) {
+      apiData = apiData || {};
+      angular.extend(this, apiData);
+    }
+
+    this.CLIENT_ID = "546e8d68-32b6-4ce7-b26d-c168cf5c9fcc";
+    this.CLIENT_SECRET = "Y3vI3xQ7xU3mV1oG8rT4lY8pL1cF7qH2rU6mJ0lQ3oE2xG5fV5";
+    this.CHANNEL_ID = "UHACK_0046";
+    this.PROCESSING_FEE_ACCOUNT_NUM = "000000012751";
+    this.PROCESSING_FEE_PERCENT = 0.02;
+    this.HEADERS = {
+      'accept': 'application/json',
+      'content-type': 'application/json',
+      'x-ibm-client-id': self.CLIENT_ID,
+      'x-ibm-client-secret': self.CLIENT_SECRET
+    }
+
+    var self = this;
+
+    UnionBank.queryBalance = function(userAccount) {
+      return $http.get("https://api.us.apiconnect.ibmcloud.com/ubpapi-dev/sb/api/RESTs/getAccount",{
+        'params': {
+          'account_no': userAccount
+        },
+        'headers': this.HEADERS
+      }).then(function(response) {
+        if (response.data[0].account_no == null){
+          return $q.reject({'code':'unionbank.queryBalance.noAccount', 'message': 'Cannot query balance for account.'});
+        } else {
+          $log.info("successfully queried balance for account", response.data[0], response.data[0].avaiable_balance); //unionbank API has a typo
+          return response.data[0].avaiable_balance;
+        }
+      }, function(error) {
+        return $q.reject(error);
+      });
+    };
+
+    UnionBank.processPayment = function(payment, userAccount, schoolAccount) {
+      var processingFee = payment.fee * this.PROCESSING_FEE_PERCENT;
+      var schoolPayment = payment.fee * (1 - this.PROCESSING_FEE_PERCENT);
+
+      // $http.post("https://api.us.apiconnect.ibmcloud.com/ubpapi-dev/sb/api/RESTs/transfer", {
+
+      // }, {
+      //   'headers': this.HEADERS
+      // }).then(function(response) {
+
+      // }, function(error){
+      //   return $q.reject({'code':'unionbank.processPayment.'})
+      // });
+
+      return $q.when(true);
+    };
+
+    UnionBank.processTransaction = function(fee, sourceAccount, targetAccount) {
+      return $q.when(true);
+    }
+
+    return UnionBank;
+  }
+])
+.factory("Account", ["$http", "$q", "$log", "$rootScope",
+  function($http, $q, $log, $rootScope) {
+    function Account(apiData) {
+      apiData = apiData || {};
+      angular.extend(this, apiData);
+    }
   }
 ])
 
@@ -887,7 +959,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     $uibModalInstance.dismiss('cancel');
   };
 })
-.controller('PaymentPageCtrl', function ($scope, $rootScope, $log, School, Subject, Student, Payment, moment) {
+.controller('PaymentPageCtrl', function ($scope, $rootScope, $log, $window, School, Subject, Student, Payment, UnionBank, moment) {
   $scope.datepickerOptions = {
     'datepickerMode': 'year',
     'maxDate': new Date()
@@ -920,6 +992,21 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
       $scope.params.totalunits = unitsList.reduce(function(a,b) { return a + b; });
     }
   }, true);
+
+  $scope.$watch(function() {
+    return $scope.params.userAccount;
+  }, function(userAccount){
+    if (userAccount && userAccount.length >= 12) {
+      UnionBank.queryBalance(userAccount).then(function(balance) {
+        $scope.userAccountBalance = balance;
+      }, function(error){
+        $scope.userAccountBalance = null;
+        $log.error("error querying balance for account", userAccount, error);
+      });
+    } else {
+      $scope.userAccountBalance = null;
+    }
+  });
 
   School.getAllSchools().then(function(schools) {
     $scope.schools = schools;
@@ -961,14 +1048,21 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     $log.error(error);
   });
 
-  function createPaymentPromise() {
-    return Payment.addPayment($scope.params).then(function(payment){
-      //compute percentage to school, percentage commission
-      //TODO: use Unionbank API to transfer 2 transactions
-      
-      //TODO: after Unionbank API, updatePaymentPromise()
+  function updatePaymentPromise() {
+    //TODO:  update payment status to paid
+  }
 
-      $window.location.replace("/payments");
+  function createPaymentPromise() {
+    var selectedSchool = $scope.schools.filter(function(school) { return school.sid==$scope.params.sid; });
+    return Payment.addPayment($scope.params).then(function(payment){
+      UnionBank.processPayment(payment, $scope.params.userAccount, selectedSchool.accountnum).then(function(response) {
+        updatePaymentPromise();
+        $window.location.replace("/payments");
+      }, function(error) {
+        $log.error("error processing unionbank payments", error);
+        $scope.error = {'code': 'unionbank.processPayment.error', 'message': error.message};
+      });
+
     }, function(error) {
       $scope.error = {'code': 'payment.addPayment.error','message': error.data};
       $log.error(error);

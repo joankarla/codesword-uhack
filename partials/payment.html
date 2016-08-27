@@ -13,7 +13,7 @@
     <div class="form-group" ng-show="dependentMode=='select'" ng-class="{ 'has-error': paymentForm.dependentSelect.$invalid && paymentForm.$dirty }">
       <select name="dependentSelect" ng-model="params.studid" class="form-control" ng-required="dependentMode=='select'">
         <option value="">---Please select dependent---</option>
-        <option ng-repeat="dep in students" ng-value="dep.studid">{{dep.firstname}} {{dep.middlename ? dep.middlename + ' ' : ''}}{{dep.lastname}}</option>
+        <option ng-repeat="dep in students" value="{{dep.studid}}">{{dep.firstname}} {{dep.middlename ? dep.middlename + ' ' : ''}}{{dep.lastname}}</option>
       </select>
     </div>
     <div class="form-group" ng-show="dependentMode=='add'">
@@ -41,9 +41,9 @@
 
     <div class="form-group" ng-class="{ 'has-error': paymentForm.schoolSelect.$invalid && paymentForm.$dirty }">
       <label for="schoolSelect">Select school to make payment to:</label>
-      <select name="schoolSelect" ng-model="params.sid" class="form-control" required>
+      <select name="schoolSelect" ng-model="params.selectedSchool" class="form-control" required>
         <option value="">---Please select school---</option>
-        <option ng-repeat="school in schools" ng-value="school.sid">{{school.name}}</option>
+        <option ng-repeat="school in schools" ng-value="school">{{school.name}}</option>
       </select>
     </div>
 
@@ -78,7 +78,7 @@
     </div>
 
     <div class="form-group">
-      <label for="subjectsSelect">Select Subjects</label>
+      <label for="subjectsSelect">Select Subjects:</label>
       <ui-select multiple ng-model="params.subjects" theme="select2" class="form-control" title="Choose a subject">
         <ui-select-match placeholder="Select or search a subject in the list...">{{$item.subname}}</ui-select-match>
         <ui-select-choices repeat="item in currentSubjectList | filter: $select.search">
@@ -116,8 +116,11 @@
       </div>
     </div>
 
-    <div class="unionbank info">
-      <!-- TODO: unionbank/visa details go here -->
+    <div class="form-group" ng-class="{ 'has-error': paymentForm.userAccount.$invalid && paymentForm.$dirty }">
+      <label for="userAccount">Enter UnionBank Account Number:</label>
+      <input type="text" class="form-control" name="userAccount" ng-model="params.userAccount"
+               placeholder="UnionBank Account Number" aria-label="UnionBank Account Number" required>
+      <span ng-if="userAccountBalance">current account balance: ₱{{userAccountBalance|number:2}}</span>
     </div>
 
     <div>
