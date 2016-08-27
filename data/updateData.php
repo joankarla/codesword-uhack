@@ -809,6 +809,86 @@
 	// $temp = '{"pid":1,"pstatus":"paid","tids":"45621586","tidff":"9821366"}';
 	// updatePayment($temp);
 
+	//Update Account Information
+	//Expects a JSON input for the data with the following info:
+	// aid
+	// uid 
+	// accountnum
+	function updateAccount ($data=null) {
+		if ($data == null) {
+			echo "Error: NO Data Found <Br/>";
+			return http_response_code(400);
+		}
+
+		debugPrint($data);
+
+		//Decode the JSON Data
+		$dataDecode = json_decode($data);
+
+		//Optional Inputs Bit Mask
+		$opMask = 0b0;
+		$opUid = 0b001;
+		$opAccountnum = 0b010;
+
+		$aid = isset($dataDecode->aid) ? $dataDecode->aid : null;
+		$uid = isset($dataDecode->uid) ? $dataDecode->uid : null;
+		$accountnum = isset($dataDecode->accountnum) ? $dataDecode->accountnum : null;
+
+		//Required Inputs: Verify if inputs exist
+		if ($aid == null) {
+			//TODO: sid verification
+
+			echo "Error: No aid Input! <Br/>";
+			return http_response_code(400);
+		}
+
+		debugPrint("opMask: $opMask");
+
+		//Optional Inputs
+		if ($name) {
+			debugPrint("uid: " . $uid);
+			$opMask = $opMask | $opUid;
+		}
+		if ($accountnum) {
+			debugPrint("accountnum: " . $accountnum);
+			$opMask = $opMask | $opAccountnum;
+		}
+
+		//Compose the required inputs
+		$setClause = "SET ";
+		$whereClause = "WHERE aid=$aid";
+
+		//Compose the optional inputs
+		$isFirst = true;
+		$ctr = 0;
+		if ($opMask & $opName) {
+			if (!$isFirst) {
+				$setClause = $setClause . ",";
+			}
+			$setClause = $setClause . "uid='$uid'";
+			$isFirst = false;
+			$ctr++;
+		}
+		if ($opMask & $opAccountnum) {
+			if (!$isFirst) {
+				$setClause = $setClause . ",";
+			}
+			$setClause = $setClause . "accountnum='$accountnum'";
+			$isFirst = false;
+			$ctr++;
+		}
+
+		if ($ctr == 0) {
+			echo "Error: No Data Available for Update";
+			return http_response_code(400);
+		}
+
+		$query = "UPDATE accounts $setClause $whereClause";
+
+		executeQuery($query);
+		debugPrint("Updated account: $aid! <Br/>");
+	}
+
 /*****************************************************************************/
 
 ?>

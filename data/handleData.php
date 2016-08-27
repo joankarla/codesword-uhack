@@ -113,6 +113,9 @@
 		elseif ($dataType == "payments") {
 			updatePayment($data);
 		}
+		elseif ($dataType == "accounts") {
+			updateAccount($data);
+		}
 	}
 	elseif ($action == "delete") {
 		if ($dataType == "users") {
@@ -129,6 +132,9 @@
 		}
 		elseif ($dataType == "payments") {
 			deletePayment($data);
+		}
+		elseif ($dataType == "accounts") {
+			deleteAccount($data);
 		}
 	}
 	else {
