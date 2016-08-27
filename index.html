@@ -10,7 +10,7 @@
   <link href="css/style.css" rel="stylesheet">
   <base href="/">
 </head>
-<body id="{{stateData.pageId}}">
+<body id="{{stateData.pageId}}" ng-controller="SampleAppController">
   <div ui-view="header"></div>
   <div ui-view="content" class="content" autoscroll="true"></div>
   <div ui-view="footer"></div>
@@ -20,6 +20,19 @@
   <script src="js/lib/angular.min.js"></script>
   <script src="js/lib/angular-ui-router.min.js"></script>
   <script src="js/lib/ui-bootstrap-tpls-2.1.0.min.js"></script>
+  <script src="js/lib/firebase.js"></script>
+  <script src="js/lib/angularfire.min.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyBBnC5pgX5mzLL9xdtLLZv2NC-oTxPkUcE",
+      authDomain: "sample-app-2c0ae.firebaseapp.com",
+      databaseURL: "https://sample-app-2c0ae.firebaseio.com",
+      storageBucket: "sample-app-2c0ae.appspot.com",
+    };
+    firebase.initializeApp(config);
+  </script>
   <script src="js/app.js"></script>
+
 </body>
 </html>
