@@ -162,6 +162,10 @@
 		//Decode the JSON Data
 		$dataDecode = json_decode($data);
 
+		//Optional Inputs Bit Mask
+		$opMask = 0b0;
+		$opDefaultpriceperunit = 0b0001;
+
 		$name = isset($dataDecode->name) ? $dataDecode->name : null;
 		$defaultpriceperunit = isset($dataDecode->defaultpriceperunit) ? $dataDecode->defaultpriceperunit : null;
 		$accountnum = isset($dataDecode->accountnum) ? $dataDecode->accountnum : null;
@@ -180,9 +184,21 @@
 			return http_response_code(400);
 		}
 
+		//Optional Inputs
+		if ($defaultpriceperunit) {
+			debugPrint("defaultpriceperunit: " . $defaultpriceperunit);
+			$opMask = $opMask | $opDefaultpriceperunit;
+		}
+
 		//Compose the required inputs
-		$columns = "name,accountnum,defaultpriceperunit";
-		$colValues = "'$name','$accountnum','$defaultpriceperunit'";
+		$columns = "name,accountnum";
+		$colValues = "'$name','$accountnum'";
+
+		//Compose the optional inputs
+		if ($opMask & $opDefaultpriceperunit) {
+			$columns = $columns . ",defaultpriceperunit";
+			$colValues = $colValues . ",'$defaultpriceperunit'";
+		}
 
 		$query = "INSERT INTO schools ($columns) VALUES ($colValues)";
 
