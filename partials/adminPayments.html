@@ -14,6 +14,7 @@
           <th></th>
           <th>Total Units</th>
           <th>Total Fee</th>
+          <th>Status</th>
         </tr>
         <tr ng-repeat="payment in payments">
           <td ng-bind="payment.payor"></td>
@@ -40,6 +41,7 @@
           </td>
           <td ng-bind="payment.totalunits"></td>
           <td>₱{{payment.fee|number:2}}</td>
+          <td>{{payment.pstatus}}</td>
         </tr>
       </table>
     </div>

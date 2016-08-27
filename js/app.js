@@ -735,7 +735,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
       apiData = apiData || {};
       angular.extend(this, apiData);
     }
-
+    var self = this;
     this.CLIENT_ID = "546e8d68-32b6-4ce7-b26d-c168cf5c9fcc";
     this.CLIENT_SECRET = "Y3vI3xQ7xU3mV1oG8rT4lY8pL1cF7qH2rU6mJ0lQ3oE2xG5fV5";
     this.CHANNEL_ID = "UHACK_0046";
@@ -744,18 +744,16 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     this.HEADERS = {
       'accept': 'application/json',
       'content-type': 'application/json',
-      'x-ibm-client-id': this.CLIENT_ID,
-      'x-ibm-client-secret': this.CLIENT_SECRET
+      'x-ibm-client-id': self.CLIENT_ID,
+      'x-ibm-client-secret': self.CLIENT_SECRET
     }
-
-    var self = this;
 
     UnionBank.queryBalance = function(userAccount) {
       return $http.get("https://api.us.apiconnect.ibmcloud.com/ubpapi-dev/sb/api/RESTs/getAccount",{
         'params': {
           'account_no': userAccount
         },
-        'headers': this.HEADERS
+        'headers': self.HEADERS
       }).then(function(response) {
         if (response.data[0].account_no == null){
           return $q.reject({'code':'unionbank.queryBalance.noAccount', 'message': 'Cannot query balance for account.'});
@@ -769,35 +767,37 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     };
 
     UnionBank.processPayment = function(payment, userAccount, schoolAccount) {
-      var processingFee = payment.fee * this.PROCESSING_FEE_PERCENT;
-      var schoolPayment = payment.fee * (1 - this.PROCESSING_FEE_PERCENT);
-      var self = this;
+      var processingFee = parseFloat(payment.fee) * self.PROCESSING_FEE_PERCENT;
+      var schoolPayment = parseFloat(payment.fee) * (1 - self.PROCESSING_FEE_PERCENT);
 
-      return this.processTransaction(payment.pid+"0", schoolPayment, userAccount, schoolAccount).then(function(response){
-        console.log("!!! yes1", response);
-
-        return this.processTransaction(payment.pid+"1", processingFee, userAccount, self.PROCESSING_FEE_ACCOUNT_NUM).then(function(response){
-          console.log("!!! yes2", response)
-
+      return UnionBank.processTransaction(payment.pid+"0", schoolPayment, userAccount, schoolAccount).then(function(response){
+        $log.info("successfully transferred payment to school", response);
+        return UnionBank.processTransaction(payment.pid+"1", processingFee, userAccount, self.PROCESSING_FEE_ACCOUNT_NUM).then(function(response){
+          $log.info("successfully transferred processing fee", response);
         }, function(error){
+          $log.error(error);
           return $q.reject({'code':'unionbank.processPayment.processFee.error', 'message': 'error transferring processing fee'});
         })
       }, function(error){
+        $log.error(error);
         return $q.reject({'code':'unionbank.processPayment.school.error', 'message': 'error transferring payment to school'});
       })
     };
 
     UnionBank.processTransaction = function(transactionId, fee, sourceAccount, targetAccount) {
-      return $http.post("https://api.us.apiconnect.ibmcloud.com/ubpapi-dev/sb/api/RESTs/transfer", {
-        "channel_id":this.CHANNEL_ID,
-        "transaction_id":transactionId,
-        "source_account":sourceAccount,
-        "source_currency":"php",
-        "target_account":targetAccount,
-        "target_currency":"php",
-        "amount":fee
-      }, {
-        'headers': this.HEADERS
+      return $http({
+        method: 'POST',
+        url: "https://api.us.apiconnect.ibmcloud.com/ubpapi-dev/sb/api/RESTs/transfer",
+        headers: self.HEADERS,
+        data: {
+          "channel_id":self.CHANNEL_ID,
+          "transaction_id": transactionId,
+          "source_account": sourceAccount,
+          "target_account": targetAccount,
+          "source_currency": "php",
+          "target_currency": "php",
+          "amount":fee
+        }
       }).then(function(response) {
         $log.info("successfully transferred", fee,"from", sourceAccount, "to", "targetAccount");
         return response;
@@ -1070,7 +1070,16 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
   }
 
   function createPaymentPromise() {
-    var selectedSchool = $scope.schools.filter(function(school) { return school.sid==$scope.params.sid; });
+    var i, len, selectedSchool;
+    for (i = 0, len = $scope.schools.length; i < len; i++) {
+      if ($scope.schools[i].sid == $scope.params.sid) {
+        selectedSchool = $scope.schools[i];
+        break;
+      }
+    }
+    if (!selectedSchool) {
+      return $q.reject({'code': 'createPaymentPromise.error', 'message': 'no school selected'});
+    }
     return Payment.addPayment($scope.params).then(function(payment){
       UnionBank.processPayment(payment, $scope.params.userAccount, selectedSchool.accountnum).then(function(response) {
         updatePaymentPromise();
