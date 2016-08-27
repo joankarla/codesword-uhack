@@ -1,0 +1,13 @@
+RewriteEngine On
+
+RewriteRule    ^allPayments$  index.html [L]
+RewriteRule    ^allSchools$  index.html [L]
+RewriteRule    ^allStudents$  index.html [L]
+RewriteRule    ^allSubjects$  index.html [L]
+RewriteRule    ^allUsers$  index.html [L]
+RewriteRule    ^report$  index.html [L]
+RewriteRule    ^dependents$  index.html [L]
+RewriteRule    ^payment$  index.html [L]
+RewriteRule    ^payments$  index.html [L]
+RewriteRule    ^profile$  index.html [L]
+RewriteRule    ^subjects$  index.html [L]
