@@ -19,6 +19,12 @@ There are 6 data types:
 
 /*****************************************************************************/
 
+There are 2 actions:
+* read (default)
+* add
+
+/*****************************************************************************/
+
 Read Usage ("id" is not needed for utype = admin):
 * http://localhost/data/handleData.php?utype=[user type]&dtype=[data type]&id=[school id or user id]
 
@@ -30,3 +36,33 @@ Ex.2. View the payments received by school with sid = 3
 
 Ex.3. View ALL subjects available
 * http://localhost/data/handleData.php?utype=admin&dtype=subjects
+
+/*****************************************************************************/
+
+Add Usage ("utype" is not needed to call "add" functions)
+* http://localhost/data/handleData.php?dtype=[data type]&action=[action type]&data=[json input]
+
+Ex.1. Add User
+* http://localhost/data/handleData.php?dtype=users&action=add&data={%22password%22:%22asdfjkl;%22,%20%22firstname%22:%22prado%22,%20%22middlename%22:%22navarro%22,%20%22lastname%22:%22bognot%22,%20%22address%22:%22Katipunan%20Ave,%20Quezon%20City%22,%20%22mobile%22:%2209163677476%22,%20%22landline%22:%226963708%22,%20%22email%22:%22updews.prado@gmail.com%22,%20%22usertype%22:%22admin%22,%20%22sid%22:null}
+
+Ex.2. Add Student
+* http://localhost/data/handleData.php?dtype=students&action=add&data={"uid":2,"firstname":"Prado","middlename":"Navarro","lastname":"Bognot","birthdate":"1990-01-01"}
+
+Ex.3. Add School
+* http://localhost/data/handleData.php?dtype=schools&action=add&data={"name":"Codesword University","accountnum":"6549205896","defaultpriceperunit":2500}
+
+Ex.4. Add Subject
+* http://localhost/data/handleData.php?dtype=subjects&action=add&data={"sid":3,"subname":"Journ 25","subdesc":"Advanced Journalism","units":3,"priceperunit":3500}
+
+Ex.5. Add Payment
+* http://localhost/data/handleData.php?dtype=payments&action=add&data={"studid":6,
+			"sid":3,
+			"timestamp":"2016-08-29 16:00:00",
+			"schoolperiod":"AY 2016-2017 Sem 1",
+			"educlevel":"undergraduate",
+			"subids":"14,16,18",
+			"totalunits":9,
+			"fee":29488.95,
+			"pstatus":"paid"}
+
+/*****************************************************************************/
