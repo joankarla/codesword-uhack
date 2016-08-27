@@ -154,7 +154,7 @@ CREATE TABLE `subjects` (
   `priceperunit` double NOT NULL,
   PRIMARY KEY (`subid`),
   KEY `sid` (`sid`),
-  CONSTRAINT `subjects_ibfk_1` FOREIGN KEY (`sid`) REFERENCES `schools` (`sid`)
+  CONSTRAINT `subjects_ibfk_1` FOREIGN KEY (`sid`) REFERENCES `schools` (`sid`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -210,4 +210,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-27 19:16:16
+-- Dump completed on 2016-08-27 22:34:19
