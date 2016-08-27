@@ -1,26 +1,43 @@
-<div class="header clearfix">
-  <nav>
-    <ul class="nav nav-pills pull-right">
-      <li role="presentation" ng-hide="currentUser"><a href="#" ng-click="header.openLogin()">Login</a></li>
-      <li role="presentation" ng-hide="currentUser"><a href="#" ng-click="header.openSignUp()">Sign Up</a></li>
-      <li role="presentation" ng-show="currentUser && currentUser.isTypeSchool()"><a href="/report">Payments</a></li>
-      <li role="presentation" ng-show="currentUser && currentUser.isTypeSchool()"><a href="/subjects">Subjects</a></li>
-      <li role="presentation" ng-show="currentUser && currentUser.isTypeUser()"><a href="/payment">Payment</a></li>
-      <li role="presentation" ng-show="currentUser && currentUser.isTypeUser()"><a href="/payments">History</a></li>
-      <li role="presentation" ng-show="currentUser && currentUser.isTypeUser()"><a href="/dependents">Dependents</a></li>
-      <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allUsers">Users</a></li>
-      <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allSubjects">Subjects</a></li>
-      <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allStudents">Students</a></li>
-      <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allSchools">Schools</a></li>
-      <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allPayments">Payments</a></li>
-      <li role="presentation" ng-show="currentUser"><a href="/profile">Profile</a></li>
-      <li role="presentation" ng-show="currentUser"><a href="#" ng-click="header.signOut()">Logout</a></li>
 
-    </ul>
-  </nav>
-  <h3 class="text-muted">Project name</h3>
-  <h6 ng-show="currentUser">Logged in as <span ng-bind="currentUser.email"></span></h6>
-</div>
+
+<nav id="mainNav" class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container">
+    <div class="header clearfix">
+
+      <div class="navbar-header page-scroll">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                  <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+              </button>
+          <a class="navbar-brand" href="#page-top">Start Bootstrap</a>
+      </div>
+
+    <nav>
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-right">
+          <li class="hidden"><a href="#page-top"></a></li>
+          <li role="presentation" ng-hide="currentUser"><a href="#" ng-click="header.openLogin()">Login</a></li>
+          <li role="presentation" ng-hide="currentUser"><a href="#" ng-click="header.openSignUp()">Sign Up</a></li>
+          <li role="presentation" ng-show="currentUser && currentUser.isTypeSchool()"><a href="/report">Payments</a></li>
+          <li role="presentation" ng-show="currentUser && currentUser.isTypeSchool()"><a href="/subjects">Subjects</a></li>
+          <li role="presentation" ng-show="currentUser && currentUser.isTypeUser()"><a href="/payment">Payment</a></li>
+          <li role="presentation" ng-show="currentUser && currentUser.isTypeUser()"><a href="/payments">History</a></li>
+          <li role="presentation" ng-show="currentUser && currentUser.isTypeUser()"><a href="/dependents">Dependents</a></li>
+          <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allUsers">Users</a></li>
+          <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allSubjects">Subjects</a></li>
+          <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allStudents">Students</a></li>
+          <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allSchools">Schools</a></li>
+          <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allPayments">Payments</a></li>
+          <li role="presentation" ng-show="currentUser"><a href="/profile">Profile</a></li>
+          <li role="presentation" ng-show="currentUser"><a href="#" ng-click="header.signOut()">Logout</a></li>
+          </ul>
+      </div>
+    </nav>
+
+      <h6 ng-show="currentUser">Logged in as <span ng-bind="currentUser.email"></span></h6>
+    </div>
+  </div>
+</nav>
+
 
 <script type="text/ng-template" id="loginModal.html">
   <div class="modal-header">
