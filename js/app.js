@@ -376,7 +376,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     };
 
     User.prototype.getInfo = function() {
-      var infoUrl = "http://localhost/data/handleData.php?utype=user&dtype=info";
+      var infoUrl = "/data/handleData.php?utype=user&dtype=info";
       var params = "&email=" + this.email;
       return $http.get(infoUrl+params).then(function(response) {
         $log.info("successfully fetched user info", response.data[0]);
@@ -391,7 +391,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     User.prototype.saveInfo = function() {
       var self = this;
       function createUserPromise() {
-        return $http.get('http://localhost/data/handleData.php', {
+        return $http.get('/data/handleData.php', {
           'params':{
             'dtype': 'users',
             'action': 'add',
@@ -438,7 +438,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         return $q.reject("usertype other than 'school' cannot get school info");
       }
 
-      var schoolInfoUrl = "http://localhost/data/handleData.php?utype=school&dtype=info";
+      var schoolInfoUrl = "/data/handleData.php?utype=school&dtype=info";
       var params ="&id=" + this.sid;
       return $http.get(schoolInfoUrl+params).then(function(response) {
         $log.info("successfully fetched school info", response.data[0]);
@@ -451,7 +451,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     };
 
     User.prototype.getPaymentsMade = function() {
-      var paymentsUrl = "http://localhost/data/handleData.php?utype=user&dtype=payments";
+      var paymentsUrl = "/data/handleData.php?utype=user&dtype=payments";
       var params ="&id=" + this.uid;
       return $http.get(paymentsUrl+params).then(function(response) {
         var i, len, payments = [];
@@ -468,7 +468,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     };
 
     User.prototype.getStudents = function() {
-      var studentsUrl = "http://localhost/data/handleData.php?utype=user&dtype=dependents";
+      var studentsUrl = "/data/handleData.php?utype=user&dtype=dependents";
       var params = "&id=" + this.uid;
       return $http.get(studentsUrl+params).then(function(response) {
         var i, len, students = [];
@@ -488,7 +488,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
       if (!$rootScope.currentUser.isTypeAdmin()) {
         return $q.reject("access denied");
       }
-      var usersUrl = "http://localhost/data/handleData.php?utype=admin&dtype=users";
+      var usersUrl = "/data/handleData.php?utype=admin&dtype=users";
       return $http.get(usersUrl).then(function(response) {
         var i, len, users = [];
         for (i = 0, len = response.data.length; i < len; i++) {
@@ -518,7 +518,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         return $q.reject("usertype 'user' can't view received payments");
       }
 
-      var paymentsUrl = "http://localhost/data/handleData.php?utype=school&dtype=payments";
+      var paymentsUrl = "/data/handleData.php?utype=school&dtype=payments";
       var params = "&id=" + this.sid;
       return $http.get(paymentsUrl+params).then(function(response) {
         var i, len, payments = [];
@@ -539,7 +539,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         return $q.reject("usertype 'user' can't view subjects");
       }
 
-      var subjectsUrl = "http://localhost/data/handleData.php?utype=school&dtype=subjects";
+      var subjectsUrl = "/data/handleData.php?utype=school&dtype=subjects";
       var params = "&id=" + this.sid;
       return $http.get(subjectsUrl+params).then(function(response) {
         var i, len, subjects = [];
@@ -556,7 +556,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     };
 
     School.saveInfo = function(params) {
-      return $http.get("http://localhost/data/handleData.php", {
+      return $http.get("/data/handleData.php", {
         'params': {
           'data': {
             'name': params.name,
@@ -576,7 +576,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     };
 
     School.getAllSchools = function() {
-      var schoolsUrl = "http://localhost/data/handleData.php?utype=admin&dtype=schools";
+      var schoolsUrl = "/data/handleData.php?utype=admin&dtype=schools";
       return $http.get(schoolsUrl).then(function(response) {
         var i, len, schools = [];
         for (i = 0, len = response.data.length; i < len; i++) {
@@ -608,7 +608,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
       if (!$rootScope.currentUser.isTypeAdmin()) {
         return $q.reject("access denied");
       }
-      var studentsUrl = "http://localhost/data/handleData.php?utype=admin&dtype=students";
+      var studentsUrl = "/data/handleData.php?utype=admin&dtype=students";
       return $http.get(studentsUrl).then(function(response) {
         var i, len, students = [];
         for (i = 0, len = response.data.length; i < len; i++) {
@@ -624,7 +624,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     };
 
     Student.addStudent = function(params) {
-      return $http.get("http://localhost/data/handleData.php", {
+      return $http.get("/data/handleData.php", {
         'params': {
           'dtype': 'students',
           'action': 'add',
@@ -654,7 +654,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     }
 
     Subject.getAllSubjects = function() {
-      var subjectsUrl = "http://localhost/data/handleData.php?utype=admin&dtype=subjects";
+      var subjectsUrl = "/data/handleData.php?utype=admin&dtype=subjects";
       return $http.get(subjectsUrl).then(function(response) {
         var i, len, subjects = [];
         for (i = 0, len = response.data.length; i < len; i++) {
@@ -685,7 +685,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
       if (!$rootScope.currentUser.isTypeAdmin()) {
         return $q.reject("access denied");
       }
-      var paymentsUrl = "http://localhost/data/handleData.php?utype=admin&dtype=payments";
+      var paymentsUrl = "/data/handleData.php?utype=admin&dtype=payments";
       return $http.get(subjectsUrl).then(function(response) {
         var i, len, payments = [];
         for (i = 0, len = response.data.length; i < len; i++) {
@@ -701,7 +701,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     };
 
     Payment.addPayment = function(params) {
-      return $http.get("http://localhost/data/handleData.php", {
+      return $http.get("/data/handleData.php", {
         'params': {
           'dtype':'payments',
           'action':'add',
