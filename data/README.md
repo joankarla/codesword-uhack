@@ -9,13 +9,14 @@ There are 3 user types:
 
 /*****************************************************************************/
 
-There are 6 data types:
+There are 7 data types:
 * Users
 * Students
 * Payments
 * Schools
 * Subjects
 * Dependents
+* Accounts
 
 /*****************************************************************************/
 
@@ -47,6 +48,12 @@ Ex.2. View the payments received by school with sid = 3
 
 Ex.3. View ALL subjects available
 * http://localhost/data/handleData.php?utype=admin&dtype=subjects
+
+Ex.4. View ALL accounts available
+* http://localhost/data/handleData.php?utype=admin&dtype=accounts
+
+Ex.5. View accounts of the user/payor with uid = 2
+* http://localhost/data/handleData.php?utype=user&dtype=accounts&id=2
 
 /*****************************************************************************/
 

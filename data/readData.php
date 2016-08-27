@@ -23,6 +23,22 @@
 		echo json_encode($allRows);
 	}
 
+	//Get all accounts
+	function getAllAccounts () {
+		$query = "SELECT  
+						aid,
+						accountnum,
+					    CONCAT(users.firstname, ' ', users.middlename, ' ', users.lastname) as payor
+					FROM
+						accounts, users
+					WHERE
+						accounts.uid = users.uid
+					ORDER BY aid";
+		$allRows = executeQuery($query);
+
+		echo json_encode($allRows);
+	}
+
 	//Get all students
 	function getAllStudents () {
 		$query = "SELECT students.*, users.email as userEmail
@@ -161,6 +177,24 @@
 	function getUserInfo ($uid) {
 		$query = "SELECT * FROM users
 					WHERE uid = $uid";
+		$allRows = executeQuery($query);
+
+		echo json_encode($allRows);
+	}
+
+	//Get accounts information using uid
+	function getAccountsFromUid ($uid) {
+		$query = "SELECT  
+						aid,
+						accountnum,
+					    CONCAT(users.firstname, ' ', users.middlename, ' ', users.lastname) as payor
+					FROM
+						accounts, users
+					WHERE
+						accounts.uid = users.uid
+					AND 
+						users.uid = '$uid'
+					ORDER BY aid";
 		$allRows = executeQuery($query);
 
 		echo json_encode($allRows);

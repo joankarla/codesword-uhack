@@ -16,6 +16,7 @@
 	// Schools
 	// Subjects
 	// Dependents
+	// Accounts
 
 	$userType;
 	$dataType;
@@ -158,6 +159,10 @@
 			elseif ($dataType == "subjects") {
 				getAllSubjects();
 			}
+			// Bank Accounts
+			elseif ($dataType == "accounts") {
+				getAllAccounts();
+			}
 			else {
 				echo "Error: Unrecognized Data Type <Br/>";
 				return http_response_code(400);
@@ -183,6 +188,10 @@
 			// Subjects
 			elseif ($dataType == "subjects") {
 				getSchoolViewSubjects($schoolId);
+			}
+			// Bank Accounts
+			elseif ($dataType == "accounts") {
+				getAccountsFromUid($schoolId);
 			}
 			else {
 				echo "Error: Unrecognized Data Type <Br/>";
@@ -215,6 +224,10 @@
 			// Dependents
 			elseif ($dataType == "dependents") {
 				getUserStudentDependents($userId);
+			}
+			// Bank Accounts
+			elseif ($dataType == "accounts") {
+				getAccountsFromUid($userId);
 			}
 			else {
 				echo "Error: Unrecognized Data Type <Br/>";
