@@ -708,7 +708,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
           'data':{
             'studid':params.studid,
             "sid":params.sid,
-            "timestamp":moment().format("YYYY MM DD hh:mm:ss"),
+            "timestamp":moment().format("YYYY-MM-DD hh:mm:ss"),
             "schoolperiod":params.schoolperiod,
             "educlevel":params.educlevel,
             "subids":params.subids,
@@ -915,7 +915,9 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     $scope.params.subids = $scope.params.subjects.map(function(a) {return a.subid;}).join();
     if ($scope.params.subjects.length > 0) {
       var feeList = $scope.params.subjects.map(function(a) { return a.priceperunit * a.units; });
+      var unitsList = $scope.params.subjects.map(function(a) { return a.units; });
       $scope.params.fee = feeList.reduce(function(a,b) { return a + b; });
+      $scope.params.totalunits = unitsList.reduce(function(a,b) { return a + b; });
     }
   }, true);
 
@@ -966,7 +968,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
       
       //TODO: after Unionbank API, updatePaymentPromise()
 
-
+      $window.location.replace("/payments");
     }, function(error) {
       $scope.error = {'code': 'payment.addPayment.error','message': error.data};
       $log.error(error);
@@ -995,8 +997,6 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     } else {
       createPaymentPromise();
     }
-
-    //redirect to payment history for sucessful payment
   };
 })
 .controller('LandingPageCtrl', function ($scope) {
