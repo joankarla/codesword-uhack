@@ -708,6 +708,61 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         return $q.reject(response);
       });
     };
+
+    Subject.addSubject = function(params) {
+      return $http.get("/data/handleData.php", {
+        'params': {
+          'dtype': 'subjects',
+          'action': 'add',
+          'data': {
+            "sid":params.sid,
+            'subname': params.subname,
+            'subdesc': params.subdesc,
+            'units': params.units,
+            'priceperunit': params.priceperunit
+          }
+        }
+      }).then(function(response) {
+        $log.info("successfully added subject", response.data[0]);
+        return new Subject(response.data[0]);
+      }, function(error){
+        $log.error("cannot add student", error);
+        return $q.reject(error);
+      });
+    };
+
+    Subject.editSubject = function(params) {
+      return $http.get("/data/handleData.php", {
+        'params': {
+          'dtype': 'subjects',
+          'action': 'update',
+          'data': params
+        }
+      }).then(function(response) {
+        $log.info("successfully edited student", response);
+      }, function(error) {
+        $log.error("cannot edit student", error);
+        return $q.reject(error);
+      });
+    }
+
+    Subject.deleteSubject = function(params) {
+      return $http.get("/data/handleData.php", {
+        'params': {
+          'dtype': 'subjects',
+          'action': 'delete',
+          'data': {
+            "subid":params.subid
+          }
+        }
+      }).then(function(response) {
+        $log.info("successfully deleted subject", response);
+      }, function(error){
+        $log.error("cannot cannot subject", error);
+        return $q.reject(error);
+      });
+    }
+
     return Subject;
   }
 ])
@@ -797,12 +852,16 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     this.CLIENT_SECRET = "Y3vI3xQ7xU3mV1oG8rT4lY8pL1cF7qH2rU6mJ0lQ3oE2xG5fV5";
     this.CHANNEL_ID = "UHACK_0046";
     this.PROCESSING_FEE_ACCOUNT_NUM = "000000012751";
-    this.PROCESSING_FEE_PERCENT = 0.02;
+    this.PROCESSING_FEE_PERCENT = 0.01;
     this.HEADERS = {
       'accept': 'application/json',
       'content-type': 'application/json',
       'x-ibm-client-id': self.CLIENT_ID,
       'x-ibm-client-secret': self.CLIENT_SECRET
+    }
+
+    UnionBank.getProcessingFeePercent = function() {
+      return self.PROCESSING_FEE_PERCENT;
     }
 
     UnionBank.queryBalance = function(userAccount) {
@@ -1199,19 +1258,97 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     $log.error(error);
   });
 })
-.controller('SchoolSubjectsPageCtrl', function ($scope, $log, $rootScope) {
+.controller('SchoolSubjectsPageCtrl', function ($scope, $log, $window, $rootScope, Subject, UnionBank) {
+  $scope.showForm=false;
+  $scope.action='add';
+  $scope.paymentReceived = 0;
+  $scope.processingFee = 0;
+
+  $scope.$watch(function() {
+    return $scope.params.priceperunit;
+  },function(priceperunit) {
+    $scope.paymentReceived = priceperunit * (1 - UnionBank.getProcessingFeePercent());
+    $scope.processingFee = priceperunit * UnionBank.getProcessingFeePercent();
+  });
+
+  $scope.submitForm = function() {
+    if ($scope.action=='add') {
+      Subject.addSubject($scope.params).then(function(response) {
+        $scope.refresh();
+      }, function(error){
+        $log.error(error);
+        $scope.error={'code':'addSubject.error', 'message': 'Cannot Add Subject. Please check your form and try again'};
+      });
+    } else {
+      Subject.editSubject($scope.params).then(function(response) {
+        $scope.refresh();
+      }, function(error) {
+        $log.error(error);
+        $scope.error={'code':'editSubject.error', 'message': 'Cannot Edit Subject. Please check your form and try again'};
+      });
+    }
+  };
+
+  $scope.refresh = function() {
+    $rootScope.currentUser.school.getSubjects().then(function(subjects) {
+      $scope.clearParams();
+      $scope.showForm=false;
+      $scope.subjects = subjects;
+    }, function(error) {
+      $scope.error = error;
+      $log.error = error;
+    });
+  }
+
+  $scope.clearParams = function() {
+    $scope.params = {
+      'sid': $rootScope.currentUser.school.sid
+    }
+  };
+
+  $scope.loadParams = function(subject) {
+    $scope.params = {
+      'sid': $rootScope.currentUser.school.sid,
+      'subname': subject.subname,
+      'subdesc': subject.subdesc,
+      'units': subject.units,
+      'priceperunit': subject.priceperunit
+    }
+  };
+
+  $scope.clickAdd = function() {
+    $scope.action = 'add';
+    $scope.clearParams();
+    $scope.showForm=!$scope.showForm;
+  }
+
+  $scope.clickEdit = function(subject) {
+    $scope.action = 'edit';
+    $scope.loadParams(subject);
+    $scope.params.subid = subject.subid;
+    $scope.showForm=true;
+  }
+
+  $scope.clickDelete = function(subject) {
+    var confirm = $window.confirm("Are you sure you want to delete "+subject.subname+"?");
+    if (confirm) {
+      Subject.deleteSubject(subject).then(function(response) {
+        $scope.refresh();
+      }, function(error){
+        $log.error(error);
+        $scope.error={'code':'delete.error', 'message': 'Cannot Delete Subject. Please try again later'};
+      })
+    }
+  }
+
   $rootScope.profilePromise.then(function(user) {
     if (!user)
       return;
 
     user.getSchoolInfo().then(function(school) {
       $rootScope.currentUser.school = school;
-      school.getSubjects().then(function(subjects) {
-        $scope.subjects = subjects;
-      }, function(error) {
-        $scope.error = error;
-        $log.error = error;
-      });
+      $scope.clearParams();
+      $scope.refresh();
     }, function(error){
       $log.error(error);
     });

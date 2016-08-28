@@ -1,17 +1,63 @@
 <div class="scaler">
   <h3>School Admin</h3>
   <div ng-cloak="profilePromise">
+    <button class="btn btn-info" type="button" ng-click="clickAdd()">Add Subject</button>
+
+    <div class="subject-form-container">
+      <div class="alert alert-danger" role="alert" ng-show="error.message">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        <span ng-bind="error.message"></span>
+      </div>
+      <form name="subjectForm" ng-show="showForm" ng-cloak ng-submit="submitForm()">
+        <div class="input-group" ng-class="{ 'has-error': subjectForm.subname.$invalid && dependentForm.$dirty }">
+          <input type="text" class="form-control" name="subname" ng-model="params.subname"
+                 placeholder="Subject Name" required>
+        </div>
+        <div class="input-group" ng-class="{ 'has-error': subjectForm.subdesc.$invalid && dependentForm.$dirty }">
+          <input type="text" class="form-control" name="subdesc" ng-model="params.subdesc"
+                 placeholder="Subject Description" required>
+        </div>
+        <div class="input-group" ng-class="{ 'has-error': subjectForm.units.$invalid && dependentForm.$dirty }">
+          <input type="text" class="form-control" name="units" ng-model="params.units"
+                 placeholder="No. of Units" required>
+        </div>
+        <div class="input-group" ng-class="{ 'has-error': subjectForm.priceperunit.$invalid && dependentForm.$dirty }">
+          <input type="text" class="form-control" name="priceperunit" ng-model="params.priceperunit"
+                 placeholder="Price per unit" required>
+          <div class="priceperunit-note" ng-show="params.priceperunit">
+            <span>This price will be charged to the users</span><br/>
+            <span>Breakdown:</span><br/>
+            <span>Payment received per unit: ₱{{paymentReceived|number:2}}</span><br/>
+            <span>Processing Fee per unit: ₱{{processingFee|number:2}}</span>
+          </div>
+        </div>
+        <div>
+          <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
+      </form>
+    </div>
+
     <h4>All Subjects:</h4>
     <div ng-show="subjects">
       <div class="table-responsive">
         <table class="table">
           <tr>
+            <th></th>
             <th>Subject Name</th>
             <th>Description</th>
             <th>Units</th>
             <th>Fee</th>
           </tr>
           <tr ng-repeat="sub in subjects">
+            <td>
+              <button type="button" class="btn btn-default" ng-click="clickEdit(sub)">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+              </button>
+              <button type="button" class="btn btn-default" ng-click="clickDelete(sub)">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+              </button>
+            </td>
             <td ng-bind="sub.subname"></td>
             <td ng-bind="sub.subdesc"></td>
             <td ng-bind="sub.units"></td>
