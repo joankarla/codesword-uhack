@@ -1458,7 +1458,9 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     $log.error(error);
   });
 })
-.controller('AdminPaymentsPageCtrl', function($scope, $log, $rootScope, Payment) {
+.controller('AdminPaymentsPageCtrl', function($scope, $log, $rootScope, Payment, UnionBank) {
+  $scope.totalRevenue = 0;
+
   $rootScope.profilePromise.then(function(user) {
     if (!user || !user.isTypeAdmin()) {
       $scope.error = "access denied";
@@ -1467,6 +1469,17 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
 
     Payment.getAllPayments().then(function(payments) {
       $scope.payments = payments;
+      if ($scope.payments.length > 0) {
+        var i, len;
+        for (i = 0, len = $scope.payments.length; i < len; i++) {
+          if ($scope.payments[i].pstatus=='paid') {
+            $scope.payments[i].processingFee = $scope.payments[i].fee * UnionBank.getProcessingFeePercent();
+            $scope.totalRevenue += $scope.payments[i].processingFee;
+          } else {
+            $scope.payments[i].processingFee = 0;
+          }
+        }
+      }
     }, function(error) {
       $scope.error = error;
       $log.error(error);
