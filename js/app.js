@@ -781,7 +781,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         return $q.reject("access denied");
       }
       var paymentsUrl = "/data/handleData.php?utype=admin&dtype=payments";
-      return $http.get(subjectsUrl).then(function(response) {
+      return $http.get(paymentsUrl).then(function(response) {
         var i, len, payments = [];
         for (i = 0, len = response.data.length; i < len; i++) {
           payments.push(new Payment(response.data[i]));
