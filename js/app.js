@@ -644,6 +644,38 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         return $q.reject(error);
       });
     };
+
+    Student.editStudent = function(params) {
+      return $http.get("/data/handleData.php", {
+        'params': {
+          'dtype': 'students',
+          'action': 'update',
+          'data': params
+        }
+      }).then(function(response) {
+        $log.info("successfully edited student", response);
+      }, function(error) {
+        $log.error("cannot edit student", error);
+        return $q.reject(error);
+      });
+    }
+
+    Student.deleteStudent = function(params) {
+      return $http.get("/data/handleData.php", {
+        'params': {
+          'dtype': 'students',
+          'action': 'delete',
+          'data': {
+            "studid":params.studid
+          }
+        }
+      }).then(function(response) {
+        $log.info("successfully deleted student", response);
+      }, function(error){
+        $log.error("cannot cannot student", error);
+        return $q.reject(error);
+      });
+    }
     return Student;
   }
 ])
@@ -726,6 +758,24 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         return $q.reject(error);
       });
     };
+
+    Payment.prototype.updatePaymentStatus = function() {
+      var self = this;
+      return $http.get("/data/handleData.php", {
+        'params': {
+          'dtype':'payments',
+          'action': 'update',
+          'data': {
+            "pid": self.pid,
+            "pstatus": "paid"
+          }
+        }
+      }).then(function(response) {
+        $log.info("successfully updated payment", response);
+      }, function(error) {
+        return $q.reject(error);
+      })
+    }
     return Payment;
   }
 ])
@@ -1065,10 +1115,6 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     $log.error(error);
   });
 
-  function updatePaymentPromise() {
-    //TODO:  update payment status to paid
-  }
-
   function createPaymentPromise() {
     var i, len, selectedSchool;
     for (i = 0, len = $scope.schools.length; i < len; i++) {
@@ -1082,8 +1128,12 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     }
     return Payment.addPayment($scope.params).then(function(payment){
       UnionBank.processPayment(payment, $scope.params.userAccount, selectedSchool.accountnum).then(function(response) {
-        updatePaymentPromise();
-        $window.location.replace("/payments");
+        payment.updatePaymentStatus().then(function(response){
+          $log.info("update payment success", response);
+          $window.location.replace("/payments");
+        }, function(error){
+          $log.error(error);
+        });
       }, function(error) {
         $log.error("error processing unionbank payments", error);
         $scope.error = {'code': 'unionbank.processPayment.error', 'message': error.message};
@@ -1177,11 +1227,82 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     $log.error(error);
   });
 })
-.controller('UserStudentsPageCtrl', function($scope, $log, $rootScope) {
+.controller('UserStudentsPageCtrl', function($scope, $log, $window, $rootScope, Student) {
+  $scope.showForm=false;
+  $scope.action='add';
+
+  $scope.submitForm = function() {
+    if ($scope.action=='add') {
+      Student.addStudent($scope.params).then(function(response) {
+        $scope.refresh();
+      }, function(error){
+        $log.error(error);
+        $scope.error={'code':'addStudent.error', 'message': 'Cannot Add Dependent. Please check your form and try again'};
+      });
+    } else {
+      Student.editStudent($scope.params).then(function(response) {
+        $scope.refresh();
+      }, function(error) {
+        $log.error(error);
+        $scope.error={'code':'editStudent.error', 'message': 'Cannot Edit Dependent. Please check your form and try again'};
+      })
+    }
+  };
+
+  $scope.refresh = function() {
+    $rootScope.currentUser.getStudents().then(function(students) {
+      $scope.students = students;
+      $scope.clearParams();
+      $scope.showForm=false;
+    });
+  }
+
+  $scope.clearParams = function() {
+    $scope.params = {
+      'uid': $rootScope.currentUser.uid
+    }
+  };
+
+  $scope.loadParams = function(student) {
+    $scope.params = {
+      'uid': $rootScope.currentUser.uid,
+      'firstname': student.firstname,
+      'middlename': student.middlename,
+      'lastname': student.lastname,
+      'birthdate': student.birthdate
+    }
+  };
+
+  $scope.clickAdd = function() {
+    $scope.action = 'add';
+    $scope.clearParams();
+    $scope.showForm=!$scope.showForm;
+  }
+
+  $scope.clickEdit = function(student) {
+    $scope.action = 'edit';
+    $scope.loadParams(student);
+    $scope.params.studid = student.studid;
+    $scope.showForm=true;
+  }
+
+  $scope.clickDelete = function(student) {
+    var confirm = $window.confirm("Are you sure you want to delete "+student.firstname+" "+student.middlename+" "+student.lastname+"?");
+    if (confirm) {
+      Student.deleteStudent(student).then(function(response) {
+        $scope.refresh();
+      }, function(error){
+        $log.error(error);
+        $scope.error={'code':'delete.error', 'message': 'Cannot Delete Dependent. Please try again later'};
+      })
+    }
+  }
+
   $rootScope.profilePromise.then(function(user) {
     if (!user)
       return;
 
+    $scope.clearParams();
     user.getStudents().then(function(students) {
       $scope.students = students;
     }, function(error) {

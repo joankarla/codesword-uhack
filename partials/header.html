@@ -6,7 +6,7 @@
               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                   <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
               </button>
-          <a class="navbar-brand" href="#page-top">Start Bootstrap</a>
+          <a class="navbar-brand" href="/">Start Bootstrap</a>
       </div>
 
     <nav>
@@ -26,10 +26,10 @@
           <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allSchools">Schools</a></li>
           <li role="presentation" ng-show="currentUser && currentUser.isTypeAdmin()"><a href="/allPayments">Payments</a></li>
           <li role="presentation" ng-show="currentUser"><a href="/profile">Profile</a></li>
-          <li role="presentation" ng-show="currentUser"><a href="#" ng-click="header.signOut()">Logout</a></li>
+          <li role="presentation" ng-show="currentUser"><a href="#" ng-click="header.signOut()">Logout <span ng-show="currentUser" class="loginSign"><span ng-bind="currentUser.email"></span></a></li>
           </ul>
       </div>
-      <!--S<h6 ng-show="currentUser" class="loginSign"><hr class="loginLine"><div class="loginSign">Logged in as <span ng-bind="currentUser.email"></span></div></h6>-->
+      
     </nav>
 
 

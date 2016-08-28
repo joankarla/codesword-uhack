@@ -1,13 +1,55 @@
 <div class="scaler">
   <h3>Dependents</h3>
   <div ng-cloak="profilePromise">
+    <button class="btn btn-info" type="button" ng-click="clickAdd()">Add Dependent</button>
+    <div class="dependent-form-container">
+      <div class="alert alert-danger" role="alert" ng-show="error.message">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        <span ng-bind="error.message"></span>
+      </div>
+      <form name="dependentForm" ng-show="showForm" ng-cloak ng-submit="submitForm()">
+        <div class="input-group" ng-class="{ 'has-error': dependentForm.firstName.$invalid && dependentForm.$dirty }">
+          <input type="text" class="form-control" name="firstName" ng-model="params.firstname"
+                 placeholder="First Name" aria-label="First Name" required>
+        </div>
+        <div class="input-group" ng-class="{ 'has-error': dependentForm.middleName.$invalid && dependentForm.$dirty }">
+          <input type="text" class="form-control" name="middleName" ng-model="params.middlename"
+                 placeholder="Middle Name" aria-label="Middle Name" required>
+        </div>
+        <div class="input-group" ng-class="{ 'has-error': dependentForm.lastName.$invalid && dependentForm.$dirty }">
+          <input type="text" class="form-control" name="lastName" ng-model="params.lastname"
+                 placeholder="Last Name" aria-label="Last Name" required>
+        </div>
+        <div class="input-group" ng-class="{ 'has-error': dependentForm.birthDate.$invalid && dependentForm.$dirty }">
+          <input type="text" placeholder="Birth Date" class="form-control" name="birthDate"
+                 required uib-datepicker-popup="{{datepickerFormat}}" ng-model="params.birthdate" is-open="datepickerOpen"
+                 datepicker-options="datepickerOptions" close-on-date-selection="false" ng-focus="datepickerOpen=true">
+          <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="datepickerOpen=true"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+        </div>
+        <div>
+          <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
+      </form>
+    </div>
     <div class="table-responsive">
       <table class="table" ng-show="students">
         <tr>
+          <th></th>
           <th>Name</th>
-          <th>Birthday</th>
+          <th>Birth date</th>
         </tr>
         <tr ng-repeat="student in students">
+          <td>
+            <button type="button" class="btn btn-default" ng-click="clickEdit(student)">
+              <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="btn btn-default" ng-click="clickDelete(student)">
+              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            </button>
+          </td>
           <td>{{student.firstname}} {{student.middlename ? student.middlename + ' ' : ''}}{{student.lastname}}</td>
           <td>{{student.birthdate|date:"mediumDate"}}</td>
         </tr>
