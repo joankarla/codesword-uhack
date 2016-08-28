@@ -7,9 +7,11 @@
         <span class="sr-only">Error:</span>
         <span ng-bind="error.message"></span>
       </div>
-      <div class="btn-group">
-        <label class="btn btn-primary" ng-model="dependentMode" uib-btn-radio="'select'">Select Dependent</label>
-        <label class="btn btn-primary" ng-model="dependentMode" uib-btn-radio="'add'">Add Dependent</label>
+      <div class="form-group">
+        <div class="btn-group">
+          <label class="btn btn-primary" ng-model="dependentMode" uib-btn-radio="'select'">Select Dependent</label>
+          <label class="btn btn-primary" ng-model="dependentMode" uib-btn-radio="'add'">Add Dependent</label>
+        </div>
       </div>
       <div class="form-group" ng-show="dependentMode=='select'" ng-class="{ 'has-error': paymentForm.dependentSelect.$invalid && paymentForm.$dirty }">
         <select name="dependentSelect" ng-model="params.studid" class="form-control" ng-required="dependentMode=='select'">
@@ -17,26 +19,28 @@
           <option ng-repeat="dep in students" value="{{dep.studid}}">{{dep.firstname}} {{dep.middlename ? dep.middlename + ' ' : ''}}{{dep.lastname}}</option>
         </select>
       </div>
-      <div class="form-group" ng-show="dependentMode=='add'">
-        <div class="input-group" ng-class="{ 'has-error': paymentForm.firstName.$invalid && paymentForm.$dirty }">
+      <div ng-show="dependentMode=='add'">
+        <div class="form-group" ng-class="{ 'has-error': paymentForm.firstName.$invalid && paymentForm.$dirty }">
           <input type="text" class="form-control" name="firstName" ng-model="params.firstname"
-                 placeholder="First Name" aria-label="First Name" ng-required="dependentMode=='add'">
+                   placeholder="First Name" aria-label="First Name" ng-required="dependentMode=='add'">
         </div>
-        <div class="input-group" ng-class="{ 'has-error': paymentForm.middleName.$invalid && paymentForm.$dirty }">
+        <div class="form-group" ng-class="{ 'has-error': paymentForm.middleName.$invalid && paymentForm.$dirty }">
           <input type="text" class="form-control" name="middleName" ng-model="params.middlename"
-                 placeholder="Middle Name" aria-label="Middle Name" ng-required="dependentMode=='add'">
+                   placeholder="Middle Name" aria-label="Middle Name" ng-required="dependentMode=='add'">
         </div>
-        <div class="input-group" ng-class="{ 'has-error': paymentForm.lastName.$invalid && paymentForm.$dirty }">
+        <div class="form-group" ng-class="{ 'has-error': paymentForm.lastName.$invalid && paymentForm.$dirty }">
           <input type="text" class="form-control" name="lastName" ng-model="params.lastname"
-                 placeholder="Last Name" aria-label="Last Name" ng-required="dependentMode=='add'">
+                   placeholder="Last Name" aria-label="Last Name" ng-required="dependentMode=='add'">
         </div>
-        <div class="input-group" ng-class="{ 'has-error': paymentForm.birthDate.$invalid && paymentForm.$dirty }">
-          <input type="text" placeholder="Birth Date" class="form-control" name="birthDate"
-                 ng-required="dependentMode=='add'" uib-datepicker-popup="{{datepickerFormat}}" ng-model="params.birthdate" is-open="datepickerOpen"
-                 datepicker-options="datepickerOptions" close-on-date-selection="false" ng-focus="datepickerOpen=true">
-          <span class="input-group-btn">
-            <button type="button" class="btn btn-default" ng-click="datepickerOpen=true"><i class="glyphicon glyphicon-calendar"></i></button>
-          </span>
+        <div class="form-group">
+          <div class="input-group" ng-class="{ 'has-error': paymentForm.birthDate.$invalid && paymentForm.$dirty }">
+            <input type="text" placeholder="Birth Date" class="form-control" name="birthDate"
+                   ng-required="dependentMode=='add'" uib-datepicker-popup="{{datepickerFormat}}" ng-model="params.birthdate" is-open="datepickerOpen"
+                   datepicker-options="datepickerOptions" close-on-date-selection="false" ng-focus="datepickerOpen=true">
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="datepickerOpen=true"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -124,7 +128,7 @@
         <span ng-if="userAccountBalance">current account balance: ₱{{userAccountBalance|number:2}}</span>
       </div>
 
-      <div>
+      <div class="form-group">
         <button class="btn btn-primary" type="submit">Submit</button>
       </div>
       <div class="alert alert-danger" role="alert" ng-show="error.message">
