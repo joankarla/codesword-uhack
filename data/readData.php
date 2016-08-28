@@ -275,7 +275,7 @@
 
 		if (empty($accountInfo)) {
 			debugPrint("Error: Email and Password did not match");
-			echo "false";
+			return http_response_code(400);
 		}
 		else {
 			echo json_encode($accountInfo);
