@@ -296,8 +296,8 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
     $rootScope.stateData = angular.copy(toState.data);
   });
 })
-.factory("Auth", ["$firebaseAuth", "$q", "ipCookie", "User",
-  function($firebaseAuth, $q, ipCookie, User) {
+.factory("Auth", ["$firebaseAuth", "$q", "$http", "$log", "ipCookie", "User",
+  function($firebaseAuth, $q, $http, $log, ipCookie, User) {
     // uncomment to user Firebase for session management:
     // return $firebaseAuth();
 
@@ -336,12 +336,19 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
 
     Auth.$signInWithEmailAndPassword = function(email, password) {
       console.log("!!! signInWithEmailAndPassword", ipCookie('USER'));
-      if (true) { //TODO: local db login verification
+      return $http.get("/data/handleData.php", {
+        'params': {
+          'action': 'login',
+          'email': email,
+          'pwd': password
+        }
+      }).then(function(response){
         ipCookie('USER', email);
         return Auth.userPromise();
-      } else {
-        return $q.reject('Wrong email/password. Please try again.');
-      }
+      }, function(error){
+        $log.error("sign in failed", error);
+        return $q.reject(error);
+      });
     };
 
     Auth.$createUserWithEmailAndPassword = function(email, password) {
@@ -962,7 +969,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
         $uibModalInstance.close();
       });
     }).catch(function(error) {
-      $scope.error = { 'code': 'login.error', 'message': error.data };
+      $scope.error = { 'code': 'login.error', 'message': 'Wrong email/password combination' };
     });
   };
 
