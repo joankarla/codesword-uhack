@@ -1263,6 +1263,7 @@ angular.module('sampleApp', ['ui.bootstrap', 'ui.router', 'firebase', 'ipCookie'
   $scope.action='add';
   $scope.paymentReceived = 0;
   $scope.processingFee = 0;
+  $scope.params = {};
 
   $scope.$watch(function() {
     return $scope.params.priceperunit;

@@ -26,8 +26,7 @@
           <input type="text" class="form-control" name="priceperunit" ng-model="params.priceperunit"
                  placeholder="Price per unit" required>
           <div class="priceperunit-note" ng-show="params.priceperunit">
-            <span>This price will be charged to the users</span><br/>
-            <span>Breakdown:</span><br/>
+            <span>Price Breakdown:</span><br/>
             <span>Payment received per unit: ₱{{paymentReceived|number:2}}</span><br/>
             <span>Processing Fee per unit: ₱{{processingFee|number:2}}</span>
           </div>
